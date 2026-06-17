@@ -42,7 +42,7 @@ export interface CVFormData {
   phone: string
   location: string
   jobTitle: string
-  // Education (can be multiple, comma-separated for simple)
+  // Education
   institution: string
   degree: string
   graduationYear: string
@@ -67,17 +67,16 @@ export interface CVFormData {
   achievements: string
 }
 
-export interface SavedCV {
+export interface LocalCV {
   id: string
-  user_id: string
-  form_data: CVFormData
-  ai_result: CVData
-  created_at: string
+  formData: CVFormData
+  aiResult: CVData
+  createdAt: string
+  templateColor: string
 }
 
 export interface Portfolio {
   id: string
-  user_id: string
   slug: string
   cv_data: CVData
   created_at: string
