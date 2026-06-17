@@ -51,18 +51,47 @@ export default function CreateCV() {
     setError('')
 
     try {
-      const response = await fetch('/api/generate-cv', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ formData: form }),
+      const response = await fetch("https://api.anthropic.com/v1/messages", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          "x-api-key": import.meta.env.VITE_ANTHROPIC_API_KEY,
+          "anthropic-version": "2023-06-01",
+          "anthropic-dangerous-direct-browser-access": "true"
+        },
+        body: JSON.stringify({
+          model: "claude-haiku-3-5-20241022",
+          max_tokens: 2000,
+          messages: [
+            {
+              role: "user",
+              content: `Kamu adalah expert HR dan CV writer profesional Indonesia.
+Buatkan CV yang profesional, menarik, dan ATS-friendly berdasarkan data berikut:
+${JSON.stringify(form)}
+
+Balas HANYA dengan JSON valid ini, tanpa markdown, tanpa backtick:
+{
+  "profile": { "name": "", "email": "", "phone": "", "location": "", "jobTitle": "", "summary": "" },
+  "education": [{ "institution": "", "degree": "", "year": "", "description": "" }],
+  "experience": [{ "company": "", "position": "", "period": "", "points": [] }],
+  "skills": { "technical": [], "soft": [] },
+  "languages": [],
+  "achievements": []
+}`
+            }
+          ]
+        })
       })
 
       if (!response.ok) {
         const err = await response.json().catch(() => ({}))
-        throw new Error(err.message || `Error ${response.status}`)
+        throw new Error(err.error?.message || `Error ${response.status}`)
       }
 
-      const { result } = await response.json()
+      const data = await response.json()
+      const text = data.content[0].text
+      const clean = text.replace(/```json|```/g, "").trim()
+      const result = JSON.parse(clean)
 
       // Save to localStorage cv_list
       const newCV = {
@@ -89,20 +118,20 @@ export default function CreateCV() {
     }
   }
 
-  const inputClass = 'w-full px-4 py-3 rounded-xl border border-gray-200 focus:border-blue-500 focus:ring-2 focus:ring-blue-100 outline-none transition-all text-gray-800 placeholder-gray-400 bg-white text-sm'
-  const labelClass = 'block text-sm font-medium text-gray-700 mb-1.5'
+  const inputClass = 'w-full px-4 py-3 rounded-xl border border-gray-700 focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20 outline-none transition-all text-white placeholder:text-gray-500 bg-gray-800 text-sm'
+  const labelClass = 'block text-sm font-medium text-gray-300 mb-1.5'
 
   return (
-    <div className="min-h-screen bg-gray-50">
+    <div className="min-h-screen bg-gray-950">
       {/* Header */}
-      <header className="bg-white border-b border-gray-100 sticky top-0 z-10">
+      <header className="bg-gray-900 border-b border-white/10 sticky top-0 z-10">
         <div className="max-w-2xl mx-auto px-6 py-4 flex items-center justify-between">
           <div className="flex items-center gap-2">
             <span>📄</span>
-            <span className="font-bold text-gray-800">CVCraft AI</span>
+            <span className="font-bold text-white">CVCraft AI</span>
           </div>
           {draftSaved && (
-            <span className="text-xs text-emerald-600 font-medium flex items-center gap-1">
+            <span className="text-xs text-emerald-400 font-medium flex items-center gap-1">
               💾 Draft tersimpan otomatis
             </span>
           )}
@@ -120,34 +149,34 @@ export default function CreateCV() {
                   i === step
                     ? 'bg-blue-600 text-white shadow-sm'
                     : i < step
-                    ? 'bg-blue-50 text-blue-600 cursor-pointer hover:bg-blue-100'
-                    : 'bg-gray-100 text-gray-400 cursor-default'
+                    ? 'bg-blue-500/20 text-blue-400 cursor-pointer hover:bg-blue-500/30'
+                    : 'bg-gray-800 text-gray-500 cursor-default'
                 }`}
               >
                 <span className={`w-5 h-5 rounded-full flex items-center justify-center text-xs font-bold ${
-                  i === step ? 'bg-white/20' : i < step ? 'bg-blue-200' : 'bg-gray-200'
+                  i === step ? 'bg-white/20' : i < step ? 'bg-blue-500/30' : 'bg-gray-700'
                 }`}>
                   {i < step ? '✓' : i + 1}
                 </span>
                 {s}
               </button>
               {i < STEPS.length - 1 && (
-                <div className={`w-4 h-0.5 rounded ${i < step ? 'bg-blue-300' : 'bg-gray-200'}`} />
+                <div className={`w-4 h-0.5 rounded ${i < step ? 'bg-blue-500/50' : 'bg-gray-700'}`} />
               )}
             </div>
           ))}
         </div>
 
-        <div className="bg-white rounded-2xl border border-gray-100 p-6 shadow-sm">
+        <div className="bg-gray-900 rounded-2xl border border-white/10 p-6">
           {/* Step 0: Data Pribadi */}
           {step === 0 && (
             <div>
               <div className="flex items-center justify-between mb-6">
-                <h2 className="text-xl font-bold text-gray-800">Data Pribadi</h2>
+                <h2 className="text-xl font-bold text-white">Data Pribadi</h2>
                 {hasDraft && (
                   <button
                     onClick={clearDraft}
-                    className="text-xs text-red-400 hover:text-red-500 font-medium"
+                    className="text-xs text-red-400 hover:text-red-300 font-medium"
                   >
                     Hapus Draft & Mulai Baru
                   </button>
@@ -211,7 +240,7 @@ export default function CreateCV() {
           {/* Step 1: Pendidikan */}
           {step === 1 && (
             <div>
-              <h2 className="text-xl font-bold text-gray-800 mb-6">Pendidikan</h2>
+              <h2 className="text-xl font-bold text-white mb-6">Pendidikan</h2>
               <div className="space-y-4">
                 <div>
                   <label className={labelClass}>Nama Institusi *</label>
@@ -259,7 +288,7 @@ export default function CreateCV() {
           {/* Step 2: Pengalaman */}
           {step === 2 && (
             <div>
-              <h2 className="text-xl font-bold text-gray-800 mb-6">Pengalaman Kerja</h2>
+              <h2 className="text-xl font-bold text-white mb-6">Pengalaman Kerja</h2>
               <div className="space-y-4">
                 <div className="grid grid-cols-2 gap-4">
                   <div>
@@ -308,15 +337,15 @@ Contoh:
 
                 {/* Additional experiences */}
                 {form.experiences.map((exp, idx) => (
-                  <div key={idx} className="p-4 bg-gray-50 rounded-xl border border-gray-100 space-y-3">
+                  <div key={idx} className="p-4 bg-gray-800 rounded-xl border border-white/10 space-y-3">
                     <div className="flex items-center justify-between">
-                      <h4 className="text-sm font-semibold text-gray-600">Pengalaman {idx + 2}</h4>
+                      <h4 className="text-sm font-semibold text-gray-400">Pengalaman {idx + 2}</h4>
                       <button
                         onClick={() => {
                           const exps = form.experiences.filter((_, i) => i !== idx)
                           updateForm({ experiences: exps })
                         }}
-                        className="text-xs text-red-400 hover:text-red-500"
+                        className="text-xs text-red-400 hover:text-red-300"
                       >
                         Hapus
                       </button>
@@ -371,7 +400,7 @@ Contoh:
                   onClick={() => updateForm({
                     experiences: [...form.experiences, { company: '', position: '', period: '', points: '' }]
                   })}
-                  className="w-full py-2.5 border-2 border-dashed border-gray-200 text-gray-400 hover:border-blue-300 hover:text-blue-500 rounded-xl text-sm font-medium transition-all"
+                  className="w-full py-2.5 border-2 border-dashed border-gray-700 text-gray-500 hover:border-blue-500/50 hover:text-blue-400 rounded-xl text-sm font-medium transition-all"
                 >
                   + Tambah Pengalaman Lain
                 </button>
@@ -382,7 +411,7 @@ Contoh:
           {/* Step 3: Keahlian */}
           {step === 3 && (
             <div>
-              <h2 className="text-xl font-bold text-gray-800 mb-6">Keahlian & Lainnya</h2>
+              <h2 className="text-xl font-bold text-white mb-6">Keahlian & Lainnya</h2>
               <div className="space-y-4">
                 <div>
                   <label className={labelClass}>Technical Skills</label>
@@ -393,7 +422,7 @@ Contoh:
                     value={form.technicalSkills}
                     onChange={e => updateForm({ technicalSkills: e.target.value })}
                   />
-                  <p className="text-xs text-gray-400 mt-1">Pisahkan dengan koma</p>
+                  <p className="text-xs text-gray-500 mt-1">Pisahkan dengan koma</p>
                 </div>
                 <div>
                   <label className={labelClass}>Soft Skills</label>
@@ -434,36 +463,36 @@ Contoh:
               <div className="w-20 h-20 bg-gradient-to-br from-blue-500 to-violet-500 rounded-2xl flex items-center justify-center mx-auto mb-6 shadow-lg shadow-blue-500/30">
                 <span className="text-4xl">✨</span>
               </div>
-              <h2 className="text-2xl font-bold text-gray-800 mb-3">
+              <h2 className="text-2xl font-bold text-white mb-3">
                 Siap Generate CV!
               </h2>
-              <p className="text-gray-500 text-sm mb-8 leading-relaxed max-w-sm mx-auto">
+              <p className="text-gray-400 text-sm mb-8 leading-relaxed max-w-sm mx-auto">
                 AI akan menganalisis data kamu dan menghasilkan CV profesional yang kuat,
                 ATS-friendly, dengan action verbs yang tepat.
               </p>
 
               {/* Summary */}
-              <div className="bg-gray-50 rounded-xl p-4 text-left mb-6 space-y-2">
+              <div className="bg-gray-800/50 rounded-xl p-4 text-left mb-6 space-y-2 border border-white/10">
                 <div className="flex items-center gap-2 text-sm">
-                  <span className="text-green-500">✓</span>
-                  <span className="text-gray-600"><strong>Nama:</strong> {form.name || '—'}</span>
+                  <span className="text-green-400">✓</span>
+                  <span className="text-gray-300"><strong>Nama:</strong> {form.name || '—'}</span>
                 </div>
                 <div className="flex items-center gap-2 text-sm">
-                  <span className="text-green-500">✓</span>
-                  <span className="text-gray-600"><strong>Posisi:</strong> {form.jobTitle || '—'}</span>
+                  <span className="text-green-400">✓</span>
+                  <span className="text-gray-300"><strong>Posisi:</strong> {form.jobTitle || '—'}</span>
                 </div>
                 <div className="flex items-center gap-2 text-sm">
-                  <span className="text-green-500">✓</span>
-                  <span className="text-gray-600"><strong>Pendidikan:</strong> {form.institution || '—'}</span>
+                  <span className="text-green-400">✓</span>
+                  <span className="text-gray-300"><strong>Pendidikan:</strong> {form.institution || '—'}</span>
                 </div>
                 <div className="flex items-center gap-2 text-sm">
-                  <span className="text-green-500">✓</span>
-                  <span className="text-gray-600"><strong>Pengalaman:</strong> {form.company || '—'}</span>
+                  <span className="text-green-400">✓</span>
+                  <span className="text-gray-300"><strong>Pengalaman:</strong> {form.company || '—'}</span>
                 </div>
               </div>
 
               {error && (
-                <div className="mb-4 p-3 bg-red-50 border border-red-100 rounded-xl text-red-600 text-sm">
+                <div className="mb-4 p-3 bg-red-500/10 border border-red-500/20 rounded-xl text-red-400 text-sm">
                   {error}
                 </div>
               )}
@@ -487,7 +516,7 @@ Contoh:
               </button>
 
               {loading && (
-                <p className="text-xs text-gray-400 mt-3">
+                <p className="text-xs text-gray-500 mt-3">
                   Biasanya membutuhkan 10-20 detik...
                 </p>
               )}
@@ -496,13 +525,13 @@ Contoh:
 
           {/* Navigation */}
           {step < 4 && (
-            <div className="flex justify-between mt-8 pt-6 border-t border-gray-50">
+            <div className="flex justify-between mt-8 pt-6 border-t border-white/10">
               <button
                 onClick={() => setStep(s => Math.max(0, s - 1))}
                 className={`px-5 py-2.5 rounded-xl font-medium text-sm transition-all ${
                   step === 0
                     ? 'opacity-0 pointer-events-none'
-                    : 'text-gray-600 bg-gray-100 hover:bg-gray-200'
+                    : 'text-gray-300 bg-gray-800 hover:bg-gray-700'
                 }`}
               >
                 ← Sebelumnya
