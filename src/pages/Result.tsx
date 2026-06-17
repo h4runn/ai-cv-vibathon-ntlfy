@@ -49,12 +49,6 @@ export default function Result() {
     setPortfolioLoading(true)
 
     try {
-      const { data: { session } } = await supabase.auth.getSession()
-      if (!session) {
-        navigate('/sign-in')
-        return
-      }
-
       const baseSlug = generateSlug(cvData.profile.name || 'pengguna')
 
       // Check for existing slug and increment if needed
@@ -73,7 +67,6 @@ export default function Result() {
       }
 
       const { error } = await supabase.from('portfolios').insert({
-        user_id: session.user.id,
         slug,
         cv_data: cvData,
       })

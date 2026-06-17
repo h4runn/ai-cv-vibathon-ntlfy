@@ -1,6 +1,5 @@
 import { useState, useEffect, useCallback } from 'react'
 import { useNavigate } from 'react-router-dom'
-import { supabase } from '../lib/supabase'
 import type { CVFormData } from '../types/cv'
 import { defaultFormData } from '../types/cv'
 
@@ -65,15 +64,17 @@ export default function CreateCV() {
 
       const { result } = await response.json()
 
-      // Save to Supabase
-      const { data: { session } } = await supabase.auth.getSession()
-      if (session) {
-        await supabase.from('cvs').insert({
-          user_id: session.user.id,
-          form_data: form,
-          ai_result: result,
-        })
+      // Save to localStorage cv_list
+      const newCV = {
+        id: 'cv_' + Date.now(),
+        formData: form,
+        aiResult: result,
+        createdAt: new Date().toISOString(),
+        templateColor: 'blue',
       }
+      const existing = JSON.parse(localStorage.getItem('cv_list') || '[]')
+      existing.unshift(newCV)
+      localStorage.setItem('cv_list', JSON.stringify(existing))
 
       // Clear draft
       localStorage.removeItem(DRAFT_KEY)
