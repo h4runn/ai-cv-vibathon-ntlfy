@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
-import { supabase } from '../lib/supabase'
+// 1. TAMBAHAN: Import library html2pdf untuk download otomatis
+import html2pdf from 'html2pdf.js'
 import type { CVData, CVTemplate } from '../types/cv'
 import CVPreview from '../components/CVPreview'
 
@@ -18,6 +19,7 @@ export default function Result() {
   const [portfolioUrl, setPortfolioUrl] = useState('')
   const [portfolioModal, setPortfolioModal] = useState(false)
   const [copyDone, setCopyDone] = useState(false)
+  const [isPremium, setIsPremium] = useState(false); // Secara default diset false (akun gratis)
 
   useEffect(() => {
     const stored = sessionStorage.getItem('cv_result')
@@ -32,8 +34,27 @@ export default function Result() {
     }
   }, [navigate])
 
+  // 2. PERBAIKAN UTAMA: Mengubah window.print() lama menjadi sistem download otomatis premium
   const handleDownloadPDF = () => {
-    window.print()
+    // Menargetkan ID container CV preview
+    const element = document.getElementById('cv-download-target')
+
+    if (!element) {
+      alert('Elemen pratinjau CV tidak ditemukan!')
+      return
+    }
+
+    const options = {
+      margin:         0.2, // Memberi sedikit jarak margin aman biar rapi
+      filename:       `CV_${cvData?.profile?.name || 'Pengguna'}.pdf`,
+      image:          { type: 'jpeg', quality: 0.98 },
+      html2canvas:    { scale: 2, useCORS: true, logging: false },
+      jsPDF:          { unit: 'in', format: 'a4', orientation: 'portrait' } // Format diatur langsung ke A4
+    }
+
+    // Eksekusi download otomatis, bypass jendela cetak printer fisik!
+    // @ts-ignore
+    html2pdf().set(options).from(element).save()
   }
 
   const generateSlug = (name: string) => {
@@ -49,29 +70,16 @@ export default function Result() {
     setPortfolioLoading(true)
 
     try {
-      const baseSlug = generateSlug(cvData.profile.name || 'pengguna')
+      await new Promise((resolve) => setTimeout(resolve, 1500))
 
-      // Check for existing slug and increment if needed
-      let slug = baseSlug
-      let counter = 1
-      while (true) {
-        const { data: existing } = await supabase
-          .from('portfolios')
-          .select('id')
-          .eq('slug', slug)
-          .maybeSingle()
+      const slug = generateSlug(cvData.profile.name || 'pengguna')
 
-        if (!existing) break
-        counter++
-        slug = `${baseSlug}-${counter}`
-      }
-
-      const { error } = await supabase.from('portfolios').insert({
-        slug,
+      const existingPortfolios = JSON.parse(localStorage.getItem('local_portfolios') || '{}')
+      existingPortfolios[slug] = {
         cv_data: cvData,
-      })
-
-      if (error) throw error
+        createdAt: new Date().toISOString()
+      }
+      localStorage.setItem('local_portfolios', JSON.stringify(existingPortfolios))
 
       const url = `${window.location.origin}/portfolio/${slug}`
       setPortfolioUrl(url)
@@ -139,34 +147,69 @@ export default function Result() {
           <div className="bg-white rounded-2xl border border-gray-100 p-5 space-y-3">
             <h3 className="font-bold text-gray-700 mb-2 text-sm">Aksi</h3>
 
-            <button
-              onClick={handleDownloadPDF}
-              className="w-full flex items-center justify-center gap-2 py-3 bg-blue-600 hover:bg-blue-700 text-white font-semibold rounded-xl text-sm transition-all"
-            >
-              📄 Download PDF
-            </button>
+{/* 1. Tombol Download PDF */}
+<button
+  onClick={handleDownloadPDF}
+  className="w-full flex items-center justify-center gap-2 py-3 bg-blue-600 hover:bg-blue-700 text-white font-semibold rounded-xl text-sm transition-all"
+>
+  📄 Download PDF
+</button>
 
-            <button
-              onClick={handleCreatePortfolio}
-              disabled={portfolioLoading}
-              className="w-full flex items-center justify-center gap-2 py-3 bg-emerald-500 hover:bg-emerald-600 text-white font-semibold rounded-xl text-sm transition-all disabled:opacity-60"
-            >
-              {portfolioLoading ? (
-                <>
-                  <span className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin" />
-                  Membuat...
-                </>
-              ) : (
-                '🌐 Buat Halaman Portofolio'
-              )}
-            </button>
+{/* 2. Kondisional Fitur Portofolio (Premium vs Gratis) */}
+{isPremium ? (
+  /* JIKA AKUN PREMIUM: Tombol Aktif */
+  <button
+    onClick={handleCreatePortfolio}
+    disabled={portfolioLoading}
+    className="w-full flex items-center justify-center gap-2 py-3 bg-emerald-500 hover:bg-emerald-600 text-white font-semibold rounded-xl text-sm transition-all disabled:opacity-60"
+  >
+    {portfolioLoading ? (
+      <>
+        <span className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin" />
+        Membuat...
+      </>
+    ) : (
+      '🌐 Buat Halaman Portofolio'
+    )}
+  </button>
+) : (
+  /* JIKA AKUN GRATIS: Tombol Terkunci & Opsi Aktivasi Simulasi */
+  <div className="space-y-2 w-full pt-4"> {/* Ditambah pt-4 memberi ruang agar badge tidak menempel */}
+    <div className="relative w-full">
+      <button
+        disabled
+        className="w-full flex items-center justify-center gap-2 py-3 bg-gray-200 text-gray-400 font-semibold rounded-xl text-sm cursor-not-allowed border border-gray-300 shadow-inner"
+      >
+        🔒 Buat Halaman Portofolio
+      </button>
+      
+      {/* Badge Diperbaiki: Posisi -top-6 agar melayang sempurna di atas tombol dan tidak menempel */}
+      <span className="absolute -top-6 left-1/2 -translate-x-1/2 bg-amber-500 text-white text-[9px] px-2.5 py-0.5 rounded-full font-bold shadow-md whitespace-nowrap tracking-wide animate-pulse">
+        ⭐ FITUR PREMIUM
+      </span>
+    </div>
 
-            <button
-              onClick={() => navigate('/create')}
-              className="w-full flex items-center justify-center gap-2 py-3 bg-gray-100 hover:bg-gray-200 text-gray-700 font-semibold rounded-xl text-sm transition-all"
-            >
-              🔄 Generate Ulang
-            </button>
+    {/* Tombol Simulasi Pembayaran */}
+    <button
+      type="button"
+      onClick={() => {
+        alert("✨ [SIMULASI PREMIUM ACTIVATED]\nPembayaran via QRIS Sukses. Fitur Cloud Sync Portofolio Online Anda telah aktif!");
+        setIsPremium(true);
+      }}
+      className="w-full py-2 bg-gradient-to-r from-amber-500 to-yellow-500 hover:from-amber-600 hover:to-yellow-600 text-white font-bold rounded-xl text-[11px] transition-all text-center shadow-sm flex items-center justify-center gap-1"
+    >
+      ⚡ Aktifkan Premium (Demo Lomba)
+    </button>
+  </div>
+)}
+
+{/* 3. Tombol Generate Ulang (SEKARANG KEMBALI MUNCUL) */}
+<button
+  onClick={() => navigate('/create')}
+  className="w-full flex items-center justify-center gap-2 py-3 bg-gray-100 hover:bg-gray-200 text-gray-700 font-semibold rounded-xl text-sm transition-all mt-2"
+>
+  🔄 Generate Ulang
+</button>
           </div>
 
           {/* CV Info */}
@@ -181,23 +224,44 @@ export default function Result() {
         </div>
 
         {/* Right Panel — CV Preview */}
+        {/* 3. PERBAIKAN UTAMA: Membungkus komponen CVPreview dengan ID agar bisa dibaca html2pdf */}
         <div className="flex-1 flex justify-center">
-          <CVPreview data={cvData} template={template} />
+          <div id="cv-download-target" className="w-full flex justify-center">
+            <CVPreview data={cvData} template={template} />
+          </div>
         </div>
       </div>
 
       {/* Portfolio Modal */}
       {portfolioModal && (
-        <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
-          <div className="bg-white rounded-3xl p-8 max-w-md w-full shadow-2xl">
-            <div className="text-center mb-6">
+        <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4 animate-fade-in">
+          <div className="bg-white rounded-3xl p-8 max-w-md w-full shadow-2xl border border-gray-100">
+            <div className="text-center mb-5">
               <div className="text-5xl mb-3">✅</div>
               <h3 className="text-xl font-bold text-gray-800">Portofolio Siap!</h3>
               <p className="text-gray-500 text-sm mt-1">Halaman portofolio kamu sudah live</p>
             </div>
 
-            <div className="bg-gray-50 rounded-xl p-3 mb-4 flex items-center gap-2">
-              <span className="text-sm text-gray-600 flex-1 truncate font-mono">{portfolioUrl}</span>
+            {/* ⚠️ BANNER PENGINGAT UNTUK DEMO JURI LOMBA */}
+            <div className="mb-4 bg-amber-50 border border-amber-200 rounded-2xl p-4 text-left shadow-inner">
+              <div className="flex items-start gap-2.5">
+                <span className="text-base shrink-0 mt-0.5">⚠️</span>
+                <div className="space-y-1">
+                  <h4 className="text-xs font-bold text-amber-800 uppercase tracking-wide">
+                    Catatan Demo Prototype
+                  </h4>
+                  <p className="text-[11px] text-amber-700 leading-relaxed">
+                    Tautan ini berbasis penyimpanan browser lokal Anda. Hasil portofolio dapat diakses dengan sempurna di perangkat ini.
+                  </p>
+                  <p className="text-[11px] text-amber-700 leading-relaxed pt-0.5">
+                    Untuk mendistribusikan link secara publik lintas perangkat, fitur <span className="font-semibold text-blue-600">Cloud Sync & Permanent Database URL</span> akan aktif otomatis pada versi <span className="font-bold text-amber-600 uppercase">Premium ⭐</span>.
+                  </p>
+                </div>
+              </div>
+            </div>
+
+            <div className="bg-gray-50 border border-gray-150 rounded-xl p-3 mb-4 flex items-center gap-2">
+              <span className="text-xs text-gray-600 flex-1 truncate font-mono">{portfolioUrl}</span>
             </div>
 
             <div className="flex gap-3">
@@ -219,7 +283,7 @@ export default function Result() {
 
             <button
               onClick={() => setPortfolioModal(false)}
-              className="w-full mt-3 text-sm text-gray-400 hover:text-gray-600"
+              className="w-full mt-4 text-sm text-gray-400 hover:text-gray-600 transition-colors"
             >
               Tutup
             </button>

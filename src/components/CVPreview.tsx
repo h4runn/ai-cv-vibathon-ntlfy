@@ -30,6 +30,28 @@ export default function CVPreview({ data, template }: CVPreviewProps) {
   const c = TEMPLATE_COLORS[template]
   const { profile, education, experience, skills, languages, achievements } = data
 
+  // ==========================================
+  // SENIORKU TRICK: Fungsi Pendeteksi Label Dinamis
+  // ==========================================
+  const getSkillLabel = (jobTitle: string) => {
+    const title = (jobTitle || '').toLowerCase();
+    
+    // Jika mengandung unsur profesi non-IT umum, ubah namanya agar logis
+    if (
+      title.includes('guru') || 
+      title.includes('teacher') || 
+      title.includes('sales') || 
+      title.includes('akuntan') || 
+      title.includes('accounting') ||
+      title.includes('admin') ||
+      title.includes('hrd')
+    ) {
+      return 'Keahlian Utama'; // Atau bisa kamu ganti jadi 'Hard Skills'
+    }
+    
+    return 'Technical Skills'; // Default untuk developer / anak IT
+  }
+
   return (
     <div
       id="cv-content"
@@ -137,10 +159,12 @@ export default function CVPreview({ data, template }: CVPreviewProps) {
 
         {/* Right column */}
         <div style={{ flex: 1, padding: '24px 20px', backgroundColor: c.light }}>
-          {/* Technical Skills */}
+          {/* UPGRADED: Label Technical Skills sekarang memanggil fungsi getSkillLabel */}
           {skills?.technical?.length > 0 && (
             <section style={{ marginBottom: '20px' }}>
-              <SectionTitle color={c.primary} small>Technical Skills</SectionTitle>
+              <SectionTitle color={c.primary} small>
+                {getSkillLabel(profile.jobTitle)}
+              </SectionTitle>
               <div style={{ display: 'flex', flexWrap: 'wrap', gap: '5px' }}>
                 {skills.technical.map((s, i) => (
                   <span
@@ -228,11 +252,11 @@ export default function CVPreview({ data, template }: CVPreviewProps) {
       </div>
 
       {/* Footer */}
-      <div style={{ borderTop: `1px solid ${c.border}`, padding: '10px 32px', textAlign: 'center' }}>
+      {/* <div style={{ borderTop: `1px solid ${c.border}`, padding: '10px 32px', textAlign: 'center' }}>
         <p style={{ fontSize: '9px', color: '#9CA3AF', margin: 0 }}>
-          Dibuat dengan CVCraft AI — HSI BS Vibathon 2026
+          Dibuat dengan CVCraft AI — Harun Vibathon 2026
         </p>
-      </div>
+      </div> */}
     </div>
   )
 }

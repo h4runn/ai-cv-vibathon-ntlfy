@@ -5,6 +5,7 @@ export interface CVProfile {
   location: string
   jobTitle: string
   summary: string
+  linkedin?: string // 👈 TAMBAHAN 1: Ditambah tanda tanya (?) artinya opsional (boleh kosong)
 }
 
 export interface CVEducation {
@@ -42,6 +43,7 @@ export interface CVFormData {
   phone: string
   location: string
   jobTitle: string
+  linkedin?: string // 👈 TAMBAHAN 2: Biar di form input juga aman
   // Education
   institution: string
   degree: string
@@ -90,6 +92,7 @@ export const defaultFormData: CVFormData = {
   phone: '',
   location: '',
   jobTitle: '',
+  linkedin: '', // 👈 TAMBAHAN 3: Nilai default string kosong
   institution: '',
   degree: '',
   graduationYear: '',

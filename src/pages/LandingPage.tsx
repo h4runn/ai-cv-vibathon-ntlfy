@@ -56,7 +56,7 @@ export default function LandingPage() {
       <div className="max-w-6xl mx-auto px-6 pt-20 pb-24 text-center">
         <div className="inline-flex items-center gap-2 bg-blue-500/20 text-blue-300 px-4 py-2 rounded-full text-sm font-medium border border-blue-500/30 mb-8">
           <span>✨</span>
-          <span>HSI BS Vibathon 2026 · Powered by Claude AI</span>
+          <span>Harun Vibathon 2026 · Powered by Claude AI</span>
         </div>
 
         <h1 className="text-5xl md:text-7xl font-extrabold text-white mb-6 leading-tight">
@@ -97,7 +97,7 @@ export default function LandingPage() {
             {
               icon: '🌐',
               title: 'Portofolio Online',
-              desc: 'Dapatkan halaman portofolio publik dengan URL unik yang bisa dibagikan ke rekruter mana saja.',
+              desc: 'Dapatkan halaman portofolio instan dengan URL unik berbasis nama Anda di perangkat ini. Fitur Cloud Sync untuk membagikan tautan secara publik ke rekruter akan tersedia pada versi Premium.',
             },
             {
               icon: '📄',
@@ -277,8 +277,8 @@ export default function LandingPage() {
             },
             {
               icon: '🎯',
-              title: 'Gratis Sepenuhnya',
-              desc: 'Tidak ada biaya tersembunyi, tidak perlu langganan, tidak perlu memasukkan API key apapun.',
+              title: 'Core Features Gratis!',
+              desc: 'Nikmati fitur utama pembuatan CV bertenaga AI dan Download PDF secara gratis tanpa biaya tersembunyi atau API key. Fitur lanjutan seperti Cloud Sync publik akan hadir Add-on Premium.',
             },
           ].map((f) => (
             <div key={f.title} className="bg-white/5 backdrop-blur rounded-2xl p-6 border border-white/10 flex items-start gap-4">
@@ -307,7 +307,7 @@ export default function LandingPage() {
       {/* Footer */}
       <div className="border-t border-white/10 py-6 text-center">
         <p className="text-blue-200/50 text-sm">
-          Dibuat dengan CVCraft AI — HSI BS Vibathon 2026
+          Dibuat dengan CVCraft AI — Harun Vibathon 2026
         </p>
       </div>
     </div>
