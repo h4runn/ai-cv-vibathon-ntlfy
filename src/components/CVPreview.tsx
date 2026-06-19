@@ -58,7 +58,7 @@ export default function CVPreview({ data, template }: CVPreviewProps) {
       className="bg-white shadow-xl"
       style={{
         width: '210mm',
-        minHeight: '297mm',
+        minHeight: 'auto',
         fontFamily: "'Inter', system-ui, sans-serif",
         fontSize: '11px',
         lineHeight: '1.5',
@@ -165,7 +165,7 @@ export default function CVPreview({ data, template }: CVPreviewProps) {
               <SectionTitle color={c.primary} small>
                 {getSkillLabel(profile.jobTitle)}
               </SectionTitle>
-              <div style={{ display: 'flex', flexWrap: 'wrap', gap: '5px' }}>
+              <div style={{ display: 'flex', flexWrap: 'wrap', gap: '6px', alignItems: 'center' }}>
                 {skills.technical.map((s, i) => (
                   <span
                     key={i}
@@ -174,9 +174,10 @@ export default function CVPreview({ data, template }: CVPreviewProps) {
                       border: `1px solid ${c.border}`,
                       color: c.text,
                       borderRadius: '20px',
-                      padding: '2px 8px',
-                      fontSize: '10px',
-                      fontWeight: 500,
+                      padding: '4px 10px',
+fontSize: '10px',
+fontWeight: 500,
+whiteSpace: 'nowrap',
                     }}
                   >
                     {s}
@@ -190,7 +191,7 @@ export default function CVPreview({ data, template }: CVPreviewProps) {
           {skills?.soft?.length > 0 && (
             <section style={{ marginBottom: '20px' }}>
               <SectionTitle color={c.primary} small>Soft Skills</SectionTitle>
-              <div style={{ display: 'flex', flexWrap: 'wrap', gap: '5px' }}>
+              <div style={{ display: 'flex', flexWrap: 'wrap', gap: '6px', alignItems: 'center' }}>
                 {skills.soft.map((s, i) => (
                   <span
                     key={i}
@@ -199,8 +200,9 @@ export default function CVPreview({ data, template }: CVPreviewProps) {
                       border: '1px solid #D1FAE5',
                       color: '#059669',
                       borderRadius: '20px',
-                      padding: '2px 8px',
-                      fontSize: '10px',
+                      padding: '4px 10px',
+fontSize: '10px',
+whiteSpace: 'nowrap',
                       fontWeight: 500,
                     }}
                   >

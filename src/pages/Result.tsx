@@ -232,7 +232,7 @@ export default function Result() {
 
         {/* Right Panel — CV Preview */}
         {/* 3. PERBAIKAN UTAMA: Membungkus komponen CVPreview dengan ID agar bisa dibaca html2pdf */}
-        <div className="flex-1 flex justify-center">
+        <div className="flex-1 flex justify-center overflow-x-auto overflow-y-auto">
           <div id="cv-download-target" className="w-full flex justify-center">
             <CVPreview data={cvData} template={template} />
           </div>
