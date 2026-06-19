@@ -1090,11 +1090,14 @@ export default function CreateCV() {
     </div>
 
     {/* Watermark Branding */}
-    <div className="absolute bottom-4 left-0 right-0 text-center border-t border-gray-100 pt-1.5">
+    <div className="absolute bottom-2 left-0 right-0 text-center text-[9px] text-gray-400 select-none z-10">
+      DIBUAT DENGAN CVCRAFT AI — VIBATHON 2026
+    </div>
+    {/* <div className="absolute bottom-4 left-0 right-0 text-center border-t border-gray-100 pt-1.5">
       <p className="text-[8px] text-gray-300 tracking-wider uppercase font-sans font-medium">
         Dibuat dengan CVCraft AI — Vibathon 2026
       </p>
-    </div>
+    </div> */}
 
   </div>
 </div>

@@ -768,7 +768,7 @@ export default function CreateCV() {
 }
 
 
-
+//file Result.tsx
 
 {/* Actions */}
           <div className="bg-white rounded-2xl border border-gray-100 p-5 space-y-3">

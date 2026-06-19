@@ -45,11 +45,18 @@ export default function Result() {
     }
 
     const options = {
-      margin:         0.2, // Memberi sedikit jarak margin aman biar rapi
+      margin:         0, // Set ke 0 agar tidak ada padding hantu yang membuat halaman 2 kosong
       filename:       `CV_${cvData?.profile?.name || 'Pengguna'}.pdf`,
       image:          { type: 'jpeg', quality: 0.98 },
-      html2canvas:    { scale: 2, useCORS: true, logging: false },
-      jsPDF:          { unit: 'in', format: 'a4', orientation: 'portrait' } // Format diatur langsung ke A4
+      html2canvas:    { 
+        scale: 2, 
+        useCORS: true, 
+        logging: false,
+        scrollY: 0 // Mengunci posisi scroll biar render tidak bergeser
+      },
+      jsPDF:          { unit: 'mm', format: 'a4', orientation: 'portrait' }, // Diubah ke unit 'mm' agar presisi A4
+      // Memaksa sistem html2pdf untuk menghindari pecah halaman otomatis pada elemen teks
+      pagebreak:      { mode: ['avoid-all', 'css', 'legacy'] }
     }
 
     // Eksekusi download otomatis, bypass jendela cetak printer fisik!
