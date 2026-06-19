@@ -101,6 +101,28 @@ export default function CreateCV() {
     };
   }, [form]);
 
+  // Syarat minimal konten per-step agar CV "berisi" & ATS-friendly
+  const canProceedStep = useMemo(() => {
+    switch (step) {
+      case 0: // Data Pribadi
+        return !!form.name && !!form.jobTitle && !!form.email;
+      case 1: // Pendidikan
+        return !!form.institution && !!form.degree;
+      case 2: // Pengalaman — INI KUNCI BIAR KERTAS TERISI
+        return (
+          !!form.company &&
+          !!form.position &&
+          (form.experiencePoints?.trim().length ?? 0) >= 120 // minimal ±120 karakter
+        );
+      case 3: // Keahlian
+        return (
+          (form.technicalSkills?.split(",").filter(Boolean).length ?? 0) >= 3
+        );
+      default:
+        return true;
+    }
+  }, [step, form]);
+
   // ==========================================
   // FITUR: EXPORT DATA KE JSON
   // ==========================================
@@ -540,14 +562,16 @@ export default function CreateCV() {
                   </div>
 
                   <div className="mt-3">
-  <label className={labelClass}>Profil LinkedIn (opsional)</label>
-  <input
-    className={inputClass}
-    placeholder="linkedin.com/in/username-anda"
-    value={form.linkedin || ''}
-    onChange={e => updateForm({ linkedin: e.target.value })}
-  />
-</div>
+                    <label className={labelClass}>
+                      Profil LinkedIn (opsional)
+                    </label>
+                    <input
+                      className={inputClass}
+                      placeholder="linkedin.com/in/username-anda"
+                      value={form.linkedin || ""}
+                      onChange={(e) => updateForm({ linkedin: e.target.value })}
+                    />
+                  </div>
                 </div>
               )}
 
@@ -679,6 +703,18 @@ export default function CreateCV() {
                         updateForm({ experiencePoints: e.target.value })
                       }
                     />
+
+                    <p
+                      className={`text-[11px] mt-1 ${
+                        (form.experiencePoints?.length ?? 0) >= 120
+                          ? "text-emerald-400"
+                          : "text-amber-400"
+                      }`}
+                    >
+                      {form.experiencePoints?.length ?? 0}/120 karakter — tulis
+                      minimal 3 poin pencapaian agar CV terisi penuh & lolos
+                      ATS.
+                    </p>
 
                     {/* TAMPILAN LIVE CHARACTER COUNTER */}
                     <div className="flex justify-between items-center mt-1 px-1">
@@ -942,10 +978,15 @@ export default function CreateCV() {
 
                 <button
                   type="button"
+                  disabled={!canProceedStep}
                   onClick={() =>
                     setStep((s) => Math.min(STEPS.length - 1, s + 1))
                   }
-                  className="px-5 py-2 bg-blue-600 hover:bg-blue-700 text-xs font-semibold rounded-xl"
+                  className={`px-5 py-2 text-xs font-semibold rounded-xl transition-all ${
+                    canProceedStep
+                      ? "bg-blue-600 hover:bg-blue-700"
+                      : "bg-gray-700 text-gray-500 cursor-not-allowed"
+                  }`}
                 >
                   Next →
                 </button>
@@ -955,152 +996,207 @@ export default function CreateCV() {
         </div>
 
         {/* PANEL KANAN: LIVE REAL-TIME PREVIEW (Kertas CV Lembaran ATS) */}
-<div className="bg-gray-900 p-8 overflow-y-auto flex justify-center items-start border-l border-white/5 h-full">
-  <div className="w-full max-w-[550px] aspect-[1/1.414] bg-white text-gray-900 p-10 shadow-2xl rounded-sm border border-gray-200 font-serif text-left relative overflow-hidden transition-all duration-300">
-    
-    {/* Header CV (Nama, Judul, Ringkasan, Kontak) */}
-    <div className="mb-6">
-      <div className="flex justify-between items-start">
-        <div>
-          <h1 className="text-2xl font-bold tracking-tight text-gray-900 min-h-[32px]">
-            {form.name || <span className="text-gray-300 italic font-normal">Nama Anda</span>}
-            {form.jobTitle && <span className="text-lg font-normal text-gray-500 font-sans"> | {form.jobTitle}</span>}
-          </h1>
-        </div>
-      </div>
+        <div className="bg-gray-900 p-4 overflow-x-auto overflow-y-auto flex justify-center items-start border-l border-white/5 h-full min-h-0">
+          <div className="w-full max-w-[550px] bg-white text-gray-900 p-10 shadow-2xl rounded-sm border border-gray-200 font-serif text-left relative overflow-y-auto transition-all duration-300">
+            {/* Header CV (Nama, Judul, Ringkasan, Kontak) */}
+            <div className="mb-6">
+              <div className="flex justify-between items-start">
+                <div>
+                  <h1 className="text-2xl font-bold tracking-tight text-gray-900 min-h-[32px]">
+                    {form.name || (
+                      <span className="text-gray-300 italic font-normal">
+                        Nama Anda
+                      </span>
+                    )}
+                    {form.jobTitle && (
+                      <span className="text-lg font-normal text-gray-500 font-sans">
+                        {" "}
+                        | {form.jobTitle}
+                      </span>
+                    )}
+                  </h1>
+                </div>
+              </div>
 
-      {/* Ringkasan / Tentang Saya */}
-      <p className="text-[11px] text-gray-600 text-justify mt-3 font-sans leading-relaxed">
-        {form.name ? (
-          `Seorang ${form.jobTitle || "profesional"} yang berkomitmen tinggi, memiliki kompetensi kuat di bidangnya, serta siap berkontribusi penuh pada target pertumbuhan jangka panjang organisasi.`
-        ) : (
-          <span className="text-gray-300 italic">Akan di-generate otomatis oleh AI...</span>
-        )}
-      </p>
+              {/* Ringkasan / Tentang Saya */}
+              <p className="text-[11px] text-gray-600 text-justify mt-3 font-sans leading-relaxed">
+                {form.name ? (
+                  `Seorang ${
+                    form.jobTitle || "profesional"
+                  } yang berkomitmen tinggi, memiliki kompetensi kuat di bidangnya, serta siap berkontribusi penuh pada target pertumbuhan jangka panjang organisasi.`
+                ) : (
+                  <span className="text-gray-300 italic">
+                    Akan di-generate otomatis oleh AI...
+                  </span>
+                )}
+              </p>
 
-      {/* Kontak Metadata */}
-      <div className="flex flex-col gap-1 text-[10px] text-gray-600 mt-4 font-sans">
-        {form.location && <div>Address: {form.location}</div>}
-        {form.email && <div>Email: {form.email}</div>}
-        {form.phone && <div>Phone: {form.phone}</div>}
-        {form.linkedin && <div>LinkedIn: {form.linkedin}</div>}
-      </div>
-    </div>
-
-    {/* SEKSI 1: WORK EXPERIENCE */}
-    <div className="border-t border-gray-300 pt-4 mb-6">
-      <h3 className="text-sm font-bold text-gray-800 mb-4 font-sans">Work Experience</h3>
-      <div className="space-y-4">
-        {/* Pengalaman Utama */}
-        <div className="grid grid-cols-4 gap-4 text-[11px]">
-          <div className="col-span-1 text-gray-400 font-sans text-[10px]">
-            {form.period || "Periode Kerja"}
-          </div>
-          <div className="col-span-3 space-y-1">
-            <div className="font-bold text-gray-800">{form.position || "Posisi Kerja"}</div>
-            <div className="font-semibold text-gray-700">{form.company || "Nama Perusahaan"}</div>
-            <div className="text-gray-600 mt-1 whitespace-pre-line text-[10px] leading-relaxed font-sans pl-4">
-              {form.experiencePoints || <span className="text-gray-300 italic">Detail pencapaian kerja...</span>}
-            </div>
-          </div>
-        </div>
-
-        {/* Loop Pengalaman Tambahan */}
-        {form.experiences && form.experiences.map((exp, idx) => (
-          <div key={idx} className="grid grid-cols-4 gap-4 text-[11px] pt-2">
-            <div className="col-span-1 text-gray-400 font-sans text-[10px]">
-              {exp.period || "Periode"}
-            </div>
-            <div className="col-span-3 space-y-1">
-              <div className="font-bold text-gray-800">{exp.position || "Posisi Kerja"}</div>
-              <div className="font-semibold text-gray-700">{exp.company || "Nama Perusahaan"}</div>
-              <div className="text-gray-600 mt-1 whitespace-pre-line text-[10px] leading-relaxed font-sans pl-4">
-                {exp.points || <span className="text-gray-300 italic">Pencapaian tambahan...</span>}
+              {/* Kontak Metadata */}
+              <div className="flex flex-col gap-1 text-[10px] text-gray-600 mt-4 font-sans">
+                {form.location && <div>Address: {form.location}</div>}
+                {form.email && <div>Email: {form.email}</div>}
+                {form.phone && <div>Phone: {form.phone}</div>}
+                {form.linkedin && <div>LinkedIn: {form.linkedin}</div>}
               </div>
             </div>
-          </div>
-        ))}
-      </div>
-    </div>
 
-    {/* SEKSI 2: EDUCATION */}
-    <div className="border-t border-gray-300 pt-4 mb-6">
-      <h3 className="text-sm font-bold text-gray-800 mb-4 font-sans">Education</h3>
-      <div className="grid grid-cols-4 gap-4 text-[11px]">
-        <div className="col-span-1 text-gray-400 font-sans text-[10px]">
-          {form.graduationYear ? `Graduated ${form.graduationYear}` : "Tahun Lulus"}
-        </div>
-        <div className="col-span-3 space-y-1">
-          <div className="font-bold text-gray-800">
-            {form.institution || <span className="text-gray-300 italic font-normal">Nama Sekolah / Universitas</span>}
-          </div>
-          <div className="text-gray-700 font-medium">
-            {form.degree || <span className="text-gray-300 italic font-normal">Jurusan / Gelar</span>}
-          </div>
-          {form.educationDesc && (
-            <p className="text-[10px] text-gray-500 mt-0.5 font-sans leading-relaxed">
-              {form.educationDesc}
-            </p>
-          )}
-        </div>
-      </div>
-    </div>
+            {/* SEKSI 1: WORK EXPERIENCE */}
+            <div className="border-t border-gray-300 pt-4 mb-6">
+              <h3 className="text-sm font-bold text-gray-800 mb-4 font-sans">
+                Work Experience
+              </h3>
+              <div className="space-y-4">
+                {/* Pengalaman Utama */}
+                <div className="grid grid-cols-4 gap-4 text-[11px]">
+                  <div className="col-span-1 text-gray-400 font-sans text-[10px]">
+                    {form.period || "Periode Kerja"}
+                  </div>
+                  <div className="col-span-3 space-y-1">
+                    <div className="font-bold text-gray-800">
+                      {form.position || "Posisi Kerja"}
+                    </div>
+                    <div className="font-semibold text-gray-700">
+                      {form.company || "Nama Perusahaan"}
+                    </div>
+                    <div className="text-gray-600 mt-1 whitespace-pre-line text-[10px] leading-relaxed font-sans pl-4">
+                      {form.experiencePoints || (
+                        <span className="text-gray-300 italic">
+                          Detail pencapaian kerja...
+                        </span>
+                      )}
+                    </div>
+                  </div>
+                </div>
 
-    {/* SEKSI 3: SKILLS & LANGUAGES (Bagi Dua Kolom Sejajar di Bawah) */}
-    <div className="border-t border-gray-300 pt-4 grid grid-cols-2 gap-8 text-[11px]">
-      {/* Kolom Kiri: Skills */}
-      <div>
-        <h3 className="text-sm font-bold text-gray-800 mb-2 font-sans">Skills</h3>
-        <ul className="list-disc list-inside space-y-1 text-gray-600 font-sans text-[10px]">
-          {form.technicalSkills ? (
-            form.technicalSkills.split(",").map((s, i) => (
-              <li key={i}>{s.trim()}</li>
-            ))
-          ) : (
-            <li className="text-gray-300 italic">Belum ada skill dimasukkan</li>
-          )}
-          {form.softSkills && (
-            <li className="text-gray-500 italic">Soft Skills: {form.softSkills}</li>
-          )}
-        </ul>
-      </div>
+                {/* Loop Pengalaman Tambahan */}
+                {form.experiences &&
+                  form.experiences.map((exp, idx) => (
+                    <div
+                      key={idx}
+                      className="grid grid-cols-4 gap-4 text-[11px] pt-2"
+                    >
+                      <div className="col-span-1 text-gray-400 font-sans text-[10px]">
+                        {exp.period || "Periode"}
+                      </div>
+                      <div className="col-span-3 space-y-1">
+                        <div className="font-bold text-gray-800">
+                          {exp.position || "Posisi Kerja"}
+                        </div>
+                        <div className="font-semibold text-gray-700">
+                          {exp.company || "Nama Perusahaan"}
+                        </div>
+                        <div className="text-gray-600 mt-1 whitespace-pre-line text-[10px] leading-relaxed font-sans pl-4">
+                          {exp.points || (
+                            <span className="text-gray-300 italic">
+                              Pencapaian tambahan...
+                            </span>
+                          )}
+                        </div>
+                      </div>
+                    </div>
+                  ))}
+              </div>
+            </div>
 
-      {/* Kolom Kanan: Languages & Achievements */}
-      <div className="space-y-4">
-        {form.languages && (
-          <div>
-            <h3 className="text-sm font-bold text-gray-800 mb-2 font-sans">Languages</h3>
-            <ul className="list-disc list-inside space-y-1 text-gray-600 font-sans text-[10px]">
-              {form.languages.split(",").map((l, i) => (
-                <li key={i}>{l.trim()}</li>
-              ))}
-            </ul>
-          </div>
-        )}
+            {/* SEKSI 2: EDUCATION */}
+            <div className="border-t border-gray-300 pt-4 mb-6">
+              <h3 className="text-sm font-bold text-gray-800 mb-4 font-sans">
+                Education
+              </h3>
+              <div className="grid grid-cols-4 gap-4 text-[11px]">
+                <div className="col-span-1 text-gray-400 font-sans text-[10px]">
+                  {form.graduationYear
+                    ? `Graduated ${form.graduationYear}`
+                    : "Tahun Lulus"}
+                </div>
+                <div className="col-span-3 space-y-1">
+                  <div className="font-bold text-gray-800">
+                    {form.institution || (
+                      <span className="text-gray-300 italic font-normal">
+                        Nama Sekolah / Universitas
+                      </span>
+                    )}
+                  </div>
+                  <div className="text-gray-700 font-medium">
+                    {form.degree || (
+                      <span className="text-gray-300 italic font-normal">
+                        Jurusan / Gelar
+                      </span>
+                    )}
+                  </div>
+                  {form.educationDesc && (
+                    <p className="text-[10px] text-gray-500 mt-0.5 font-sans leading-relaxed">
+                      {form.educationDesc}
+                    </p>
+                  )}
+                </div>
+              </div>
+            </div>
 
-        {form.achievements && (
-          <div>
-            <h3 className="text-sm font-bold text-gray-800 mb-1 font-sans">Achievements</h3>
-            <p className="text-gray-600 font-sans text-[10px] whitespace-pre-line pl-1">
-              {form.achievements}
-            </p>
-          </div>
-        )}
-      </div>
-    </div>
+            {/* SEKSI 3: SKILLS & LANGUAGES (Bagi Dua Kolom Sejajar di Bawah) */}
+            <div className="border-t border-gray-300 pt-4 grid grid-cols-2 gap-8 text-[11px]">
+              {/* Kolom Kiri: Skills */}
+              <div>
+                <h3 className="text-sm font-bold text-gray-800 mb-2 font-sans">
+                  Skills
+                </h3>
+                <ul className="list-disc list-inside space-y-1 text-gray-600 font-sans text-[10px]">
+                  {form.technicalSkills ? (
+                    form.technicalSkills
+                      .split(",")
+                      .map((s, i) => <li key={i}>{s.trim()}</li>)
+                  ) : (
+                    <li className="text-gray-300 italic">
+                      Belum ada skill dimasukkan
+                    </li>
+                  )}
+                  {form.softSkills && (
+                    <li className="text-gray-500 italic">
+                      Soft Skills: {form.softSkills}
+                    </li>
+                  )}
+                </ul>
+              </div>
 
-    {/* Watermark Branding */}
-    <div className="absolute bottom-2 left-0 right-0 text-center text-[9px] text-gray-400 select-none z-10">
-      DIBUAT DENGAN CVCRAFT AI — VIBATHON 2026
-    </div>
-    {/* <div className="absolute bottom-4 left-0 right-0 text-center border-t border-gray-100 pt-1.5">
+              {/* Kolom Kanan: Languages & Achievements */}
+              <div className="space-y-4">
+                {form.languages && (
+                  <div>
+                    <h3 className="text-sm font-bold text-gray-800 mb-2 font-sans">
+                      Languages
+                    </h3>
+                    <ul className="list-disc list-inside space-y-1 text-gray-600 font-sans text-[10px]">
+                      {form.languages.split(",").map((l, i) => (
+                        <li key={i}>{l.trim()}</li>
+                      ))}
+                    </ul>
+                  </div>
+                )}
+
+                {form.achievements && (
+                  <div>
+                    <h3 className="text-sm font-bold text-gray-800 mb-1 font-sans">
+                      Achievements
+                    </h3>
+                    <p className="text-gray-600 font-sans text-[10px] whitespace-pre-line pl-1">
+                      {form.achievements}
+                    </p>
+                  </div>
+                )}
+              </div>
+            </div>
+
+            {/* Watermark Branding */}
+            <div className="absolute bottom-2 left-0 right-0 text-center text-[9px] text-gray-400 select-none z-10">
+              DIBUAT DENGAN CVCRAFT AI — VIBATHON 2026
+            </div>
+            {/* <div className="absolute bottom-4 left-0 right-0 text-center border-t border-gray-100 pt-1.5">
       <p className="text-[8px] text-gray-300 tracking-wider uppercase font-sans font-medium">
         Dibuat dengan CVCraft AI — Vibathon 2026
       </p>
     </div> */}
-
-  </div>
-</div>
+          </div>
+        </div>
       </div>
     </div>
   );
