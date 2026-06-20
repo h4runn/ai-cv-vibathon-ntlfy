@@ -168,7 +168,7 @@ export default function Result() {
         </div>
       </header>
 
-      <div className="max-w-7xl mx-auto px-6 py-8 flex gap-8">
+      <div className="no-print w-full md:w-72 shrink-0 space-y-4">
         {/* Left Panel — Controls */}
         <div className="no-print w-72 shrink-0 space-y-4">
           {/* Template Selector */}
@@ -291,16 +291,15 @@ export default function Result() {
           </div>
         </div>
 
+        
         {/* Right Panel — CV Preview */}
-        {/* 3. PERBAIKAN UTAMA: Membungkus komponen CVPreview dengan ID agar bisa dibaca html2pdf */}
-        <div className="flex-1 flex justify-center overflow-x-auto overflow-y-auto">
-          <div id="cv-download-target" className="w-full flex justify-center">
-            {/* Beri pembungkus div kosong ini agar dibaca sempurna oleh querySelector */}
-            <div>
-              <CVPreview data={cvData} template={template} />
-            </div>
-          </div>
-        </div>
+<div className="flex-1 flex justify-center max-w-full overflow-x-hidden overflow-y-auto">
+  <div id="cv-download-target" className="w-full flex justify-center max-w-full overflow-x-hidden">
+    <div className="max-w-full overflow-x-auto p-2 flex justify-center">
+      <CVPreview data={cvData} template={template} />
+    </div>
+  </div>
+</div>
       </div>
 
       {/* Portfolio Modal */}
