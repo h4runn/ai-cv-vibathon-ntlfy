@@ -1,12 +1,49 @@
-import { useEffect, useState } from 'react'
+import React, { useEffect, useState } from 'react'
 import { useParams, Link } from 'react-router-dom'
 import type { CVData } from '../types/cv'
+
+// ✨ HELPER COMPONENT: SCROLL REVEAL ANIMATION NATIVE (Bebas Error Type & Super Smooth)
+function ScrollReveal({ children, delay = 0 }: { children: React.ReactNode; delay?: number }) {
+  const [isIntersecting, setIsIntersecting] = useState(false)
+  const [ref, setRef] = useState<HTMLDivElement | null>(null)
+
+  useEffect(() => {
+    if (!ref) return
+    const observer = new IntersectionObserver(
+      ([entry]) => {
+        if (entry.isIntersecting) {
+          setIsIntersecting(true)
+          observer.unobserve(ref) // Trigger sekali untuk performa smooth
+        }
+      },
+      { 
+        threshold: 0.05,
+        rootMargin: '0px 0px -40px 0px'
+      }
+    )
+    observer.observe(ref)
+    return () => observer.disconnect()
+  }, [ref])
+
+  return (
+    <div
+      ref={setRef}
+      style={{ transitionDelay: `${delay}ms` }}
+      className={`transition-all duration-700 ease-out transform ${
+        isIntersecting ? 'opacity-100 translate-y-0 scale-100' : 'opacity-0 translate-y-8 scale-[0.99]'
+      }`}
+    >
+      {children}
+    </div>
+  )
+}
 
 export default function Portfolio() {
   const { slug } = useParams<{ slug: string }>()
   const [data, setData] = useState<CVData | null>(null)
   const [loading, setLoading] = useState(true)
   const [notFound, setNotFound] = useState(false)
+  const [copiedText, setCopiedText] = useState<string | null>(null)
 
   useEffect(() => {
     const load = async () => {
@@ -35,12 +72,18 @@ export default function Portfolio() {
     load()
   }, [slug])
 
+  const copyToClipboard = (text: string, label: string) => {
+    navigator.clipboard.writeText(text)
+    setCopiedText(label)
+    setTimeout(() => setCopiedText(null), 2000)
+  }
+
   if (loading) {
     return (
-      <div className="min-h-screen bg-slate-950 flex items-center justify-center">
-        <div className="text-center">
-          <div className="w-12 h-12 border-4 border-blue-500 border-t-transparent rounded-full animate-spin mx-auto mb-4" />
-          <p className="text-slate-400 text-sm font-medium">Memuat portofolio premium...</p>
+      <div className="min-h-screen bg-slate-50 flex items-center justify-center text-slate-800">
+        <div className="text-center space-y-4">
+          <div className="w-12 h-12 border-2 border-blue-600 border-t-transparent rounded-full animate-spin mx-auto" />
+          <p className="text-xs font-mono tracking-widest text-slate-400 uppercase animate-pulse">Mengompilasi Portofolio Premium...</p>
         </div>
       </div>
     )
@@ -48,18 +91,15 @@ export default function Portfolio() {
 
   if (notFound || !data) {
     return (
-      <div className="min-h-screen bg-slate-950 flex items-center justify-center">
-        <div className="text-center max-w-sm p-6">
-          <div className="text-7xl mb-6">🔍</div>
-          <h1 className="text-2xl font-bold text-white mb-2">Portofolio Tidak Ditemukan</h1>
-          <p className="text-slate-400 text-sm mb-8">
-            Halaman portofolio <strong>/{slug}</strong> tidak ada atau telah dihapus.
+      <div className="min-h-screen bg-slate-50 flex items-center justify-center p-6 text-slate-800">
+        <div className="text-center max-w-sm bg-white border border-slate-200 rounded-2xl p-8 shadow-2xl">
+          <div className="text-5xl mb-4">🛸</div>
+          <h1 className="text-xl font-bold tracking-tight mb-2">Portofolio Tidak Ditemukan</h1>
+          <p className="text-slate-500 text-xs mb-6 leading-relaxed">
+            Halaman portofolio <strong className="text-blue-600">/{slug}</strong> belum ter-generate di database lokal kamu.
           </p>
-          <Link
-            to="/"
-            className="inline-flex items-center gap-2 px-5 py-2.5 bg-blue-600 text-white font-semibold rounded-xl text-sm hover:bg-blue-700 transition-all shadow-md shadow-blue-600/20"
-          >
-            ← Kembali ke CVCraft AI
+          <Link to="/" className="inline-flex items-center justify-center px-5 py-2.5 bg-blue-600 hover:bg-blue-500 text-white font-semibold rounded-xl text-xs transition-all w-full shadow-lg shadow-blue-600/20">
+            ← Mulai Buat di CVCraft AI
           </Link>
         </div>
       </div>
@@ -67,233 +107,311 @@ export default function Portfolio() {
   }
 
   const { profile, experience, education, skills, languages, achievements } = data
-  const mailtoHref = `mailto:${profile.email}`
+
+  // 📊 DYNAMIC METRICS ENGINE (Menghitung data asli agar sinkron)
+  const totalSkills = (skills?.technical?.length || 0) + (skills?.soft?.length || 0)
+  const totalExp = experience?.length || 0
+  const totalAchievements = achievements?.length || 0
 
   return (
-    <div className="min-h-screen bg-slate-950 text-slate-100 antialiased selection:bg-blue-600 selection:text-white">
+    <div className="min-h-screen bg-slate-50 text-slate-800 font-sans antialiased selection:bg-blue-600 selection:text-white relative overflow-x-hidden pb-20">
       
-      {/* 🚀 HERO SECTION PREMIUM (UKURAN BESAR & PAS SESUAI GAMBAR) */}
-      <section className="relative bg-slate-900 text-white py-32 px-6 overflow-hidden border-b border-slate-800/80">
-        {/* Latar Belakang Grid/Radial Halus */}
-        <div className="absolute inset-0 opacity-10 bg-[radial-gradient(#3b82f6_1px,transparent_1px)] [background-size:24px_24px]" />
-        
-        {/* Container Utama: Menggunakan flex-row-reverse agar Inisial Nama berada di KANAN */}
-        <div className="relative max-w-5xl mx-auto flex flex-col md:flex-row-reverse items-center justify-between gap-12 md:gap-16">
-          
-          {/* ✅ SISI KANAN: Inisial Huruf Raksasa Bulat */}
-          <div className="w-36 h-36 md:w-56 md:h-56 rounded-full bg-blue-600 border-4 border-blue-500 flex items-center justify-center text-6xl md:text-[110px] font-black text-white shrink-0 ...">
-            {profile.name?.[0]?.toUpperCase() || '👤'}
-          </div>
-          
-          {/* ✅ SISI KIRI: Detail Teks Informasi Rata Kiri */}
-          <div className="flex-1 text-center md:text-left space-y-6 w-full">
-            <div>
-              <h1 className="text-4xl md:text-5xl font-black tracking-tight mb-2 bg-gradient-to-r from-white via-slate-100 to-slate-400 bg-clip-text text-transparent">
-                {profile.name}
-              </h1>
-              <p className="text-sky-400 text-base md:text-lg font-extrabold tracking-wider uppercase">
-                🚀 {profile.jobTitle || 'Professional'}
-              </p>
-            </div>
-            
-            {/* Informasi Kontak Bersusun Rapi ke Bawah */}
-            <div className="text-sm md:text-base text-slate-300 bg-slate-800/40 backdrop-blur-md border border-slate-700/50 rounded-2xl p-6 shadow-inner space-y-3 max-w-xl mx-auto md:mx-0">
-              {profile.location && (
-                <div className="flex items-center gap-3 justify-start">
-                  <span className="text-slate-500 text-lg w-5 text-center">📍</span>
-                  <span>{profile.location}</span>
-                </div>
-              )}
-              {profile.phone && (
-                <div className="flex items-center gap-3 justify-start">
-                  <span className="text-slate-500 text-lg w-5 text-center">📞</span>
-                  <span>{profile.phone}</span>
-                </div>
-              )}
-              {profile.email && (
-                <div className="flex items-center gap-3 justify-start">
-                  <span className="text-slate-500 text-lg w-5 text-center">✉️</span>
-                  <span className="truncate">{profile.email}</span>
-                </div>
-              )}
-              
-              {/* Deteksi Otomatis LinkedIn Profile */}
-              {(profile as any).linkedin && (
-                <div className="flex items-center gap-3 justify-start">
-                  <span className="text-slate-500 text-lg w-5 text-center">🔗</span>
-                  <a 
-                    href={`https://${(profile as any).linkedin.replace('https://', '').replace('http://', '')}`}
-                    target="_blank" 
-                    rel="noreferrer"
-                    className="text-sky-400 hover:underline font-bold truncate"
-                  >
-                    LinkedIn Profile
-                  </a>
-                </div>
-              )}
-            </div>
+      {/* 🔮 BACKGROUND MESH & GLOW PREMIUM (Versi Terang Halus ala Vercel Light Design) */}
+      <div className="absolute inset-0 bg-[linear-gradient(to_right,#e2e8f0_1px,transparent_1px),linear-gradient(to_bottom,#e2e8f0_1px,transparent_1px)] bg-[size:4rem_4rem] [mask-image:radial-gradient(ellipse_60%_50%_at_50%_0%,#000_70%,transparent_100%)] pointer-events-none" />
+      <div className="absolute top-[-5%] left-[-10%] w-[600px] h-[600px] bg-gradient-to-br from-blue-500/10 to-transparent rounded-full blur-[130px] pointer-events-none" />
+      <div className="absolute top-[30%] right-[-10%] w-[500px] h-[500px] bg-gradient-to-br from-indigo-500/10 to-transparent rounded-full blur-[110px] pointer-events-none" />
+      <div className="absolute bottom-[10%] left-[-5%] w-[450px] h-[450px] bg-gradient-to-br from-emerald-500/5 to-transparent rounded-full blur-[100px] pointer-events-none" />
 
-            {/* Tombol Aksi Kontat */}
-            <div className="pt-2 flex justify-center md:justify-start w-full">
-              <a
-                href={mailtoHref}
-                className="inline-flex items-center gap-2.5 px-6 py-3 bg-blue-600 hover:bg-blue-500 text-white font-bold rounded-xl text-sm transition-all shadow-lg shadow-blue-600/30 active:scale-95"
-              >
-                💼 Hubungi Saya Via Email
+      {/* MIKRO INTERAKSI TOAST (Gaya Notifikasi Mengambang) */}
+      {copiedText && (
+        <div className="fixed bottom-6 right-6 z-50 bg-white border border-slate-200 text-blue-600 px-4 py-2 rounded-xl text-xs font-mono shadow-2xl animate-bounce flex items-center gap-2">
+          <span>⚡</span> {copiedText} Berhasil Disalin!
+        </div>
+      )}
+
+      {/* 🏢 TOP HEADER VERIFICATION BANNER */}
+      <header className="max-w-6xl mx-auto pt-20 pb-6 px-6">
+        <div className="flex items-center gap-2 px-3 py-1 rounded-full border border-slate-200 bg-white/80 backdrop-blur-md w-fit text-[10px] font-mono tracking-wider text-slate-500 uppercase shadow-sm">
+          <span className="w-1.5 h-1.5 rounded-full bg-blue-600 animate-ping" />
+          Engine Verified Portfolio v1.2
+        </div>
+      </header>
+
+      {/* 🏛️ COMBINED BENTO GRID STRUCTURE */}
+      <main className="max-w-6xl mx-auto px-6 grid grid-cols-1 md:grid-cols-3 gap-5">
+        
+        {/* ================= 🔥 BENTO 1: IDENTITY HERO CARD (SEKARANG JAUH LEBIH GEDE & MEGAH) ================= */}
+        <div className="md:col-span-3">
+          <ScrollReveal>
+            {/* Mengubah padding dari p-8 md:p-12 menjadi p-10 md:py-24 md:px-16 untuk memberikan kesan extra space premium */}
+            <div className="bg-gradient-to-br from-white to-slate-50/50 border border-slate-200/90 rounded-3xl p-10 md:py-24 md:px-16 flex flex-col md:flex-row md:items-center justify-between gap-8 relative overflow-hidden group hover:border-slate-300 transition-all duration-300 shadow-md">
+              <div className="absolute top-0 right-0 w-64 h-64 bg-blue-500/5 rounded-full blur-3xl group-hover:bg-blue-500/10 transition-colors" />
+              
+              <div className="space-y-6 flex-1">
+                <div className="space-y-3">
+                  <h1 className="text-5xl md:text-7xl font-black tracking-tight text-slate-900 leading-none">
+                    {profile.name}
+                  </h1>
+                  {/* FIX ROKET BIRU: Memisahkan emoji roket dari text-gradient agar warnanya kembali normal */}
+                  <p className="text-base md:text-xl font-extrabold flex items-center gap-2 text-slate-800">
+                    <span className="inline-block select-none filter-none" style={{ color: 'initial', WebkitTextFillColor: 'initial' }}>🚀</span>
+                    <span className="text-transparent bg-clip-text bg-gradient-to-r from-blue-600 via-indigo-600 to-purple-600">
+                      {profile.jobTitle || 'Expert Professional'}
+                    </span>
+                  </p>
+                </div>
+
+                {/* METADATA INTERAKTIF (Bisa Di-klik Copy dengan Indikator) */}
+                <div className="flex flex-wrap items-center gap-x-6 gap-y-3 text-xs md:text-sm text-slate-600 font-mono pt-6 border-t border-slate-200/60 mt-6">
+                  {profile.location && <span className="flex items-center gap-1.5">📍 {profile.location}</span>}
+                  
+                  {profile.email && (
+                    <button 
+                      onClick={() => copyToClipboard(profile.email, 'Email')} 
+                      className="hover:text-blue-600 transition-colors flex items-center gap-1.5 cursor-pointer bg-transparent border-none p-0 font-mono font-medium"
+                    >
+                      ✉️ {profile.email}
+                    </button>
+                  )}
+                  
+                  {profile.phone && (
+                    <button 
+                      onClick={() => copyToClipboard(profile.phone, 'No. HP')} 
+                      className="hover:text-blue-600 transition-colors flex items-center gap-1.5 cursor-pointer bg-transparent border-none p-0 font-mono font-medium"
+                    >
+                      📞 {profile.phone}
+                    </button>
+                  )}
+                  
+                  {(profile as any).linkedin && (
+                    <a 
+                      href={`https://${(profile as any).linkedin.replace('https://', '')}`} 
+                      target="_blank" 
+                      rel="noreferrer" 
+                      className="text-blue-600 hover:underline flex items-center gap-1.5 font-mono font-bold"
+                    >
+                      🔗 LinkedIn
+                    </a>
+                  )}
+                </div>
+              </div>
+
+              {/* Bulatan Avatar Raksasa Sebelah Kanan (Ikut diperbesar menyesuaikan section hero baru) */}
+              <div className="w-28 h-28 md:w-44 md:h-44 rounded-full bg-gradient-to-br from-blue-600 to-indigo-600 shadow-2xl flex items-center justify-center text-4xl md:text-6xl font-black text-white shrink-0 border-4 border-white ring-4 ring-blue-50/50 group-hover:scale-105 transition-transform duration-300">
+                {profile.name?.[0]?.toUpperCase() || '👤'}
+              </div>
+            </div>
+          </ScrollReveal>
+        </div>
+
+        {/* ================= BENTO 2: METRICS DASHBOARD (1 Kolom) ================= */}
+        <div>
+          <ScrollReveal delay={100}>
+            <div className="bg-white border border-slate-200/90 rounded-3xl p-6 flex flex-col justify-between shadow-sm min-h-[220px]">
+              <p className="text-[10px] font-mono tracking-widest text-slate-400 uppercase">Engine Metrics Dashboard</p>
+              
+              <div className="grid grid-cols-3 gap-2 py-4 my-auto">
+                <div className="text-center p-3 rounded-2xl bg-slate-50 border border-slate-100">
+                  <span className="block text-xl font-black text-blue-600 font-mono">{totalExp}</span>
+                  <span className="text-[9px] font-bold tracking-wide text-slate-500 block mt-1">Karir</span>
+                </div>
+                <div className="text-center p-3 rounded-2xl bg-slate-50 border border-slate-100">
+                  <span className="block text-xl font-black text-indigo-600 font-mono">{totalSkills}</span>
+                  <span className="text-[9px] font-bold tracking-wide text-slate-500 block mt-1">Skill</span>
+                </div>
+                <div className="text-center p-3 rounded-2xl bg-slate-50 border border-slate-100">
+                  <span className="block text-xl font-black text-amber-600 font-mono">{totalAchievements}</span>
+                  <span className="text-[9px] font-bold tracking-wide text-slate-500 block mt-1">Prestasi</span>
+                </div>
+              </div>
+
+              <a href={`mailto:${profile.email}`} className="w-full py-2.5 bg-slate-900 hover:bg-slate-800 text-center rounded-xl text-xs font-mono text-white transition-all flex items-center justify-center gap-1.5 font-bold shadow-md shadow-slate-900/10">
+                <span>✨</span> Hubungi Saya Direct
               </a>
             </div>
-          </div>
-
+          </ScrollReveal>
         </div>
-      </section>
 
-      {/* BODY CONTENT */}
-      <div className="max-w-3xl mx-auto px-6 py-16 space-y-12">
-        {/* ABOUT */}
-        {profile.summary && (
-          <section className="bg-slate-900/60 border border-slate-800/80 rounded-3xl p-8 shadow-xl backdrop-blur-sm hover:border-slate-700/60 transition-all duration-300">
-            <SectionHeading emoji="✨">Tentang Saya</SectionHeading>
-            <p className="text-slate-300 leading-relaxed text-base text-justify">{profile.summary}</p>
-          </section>
-        )}
+        {/* ================= BENTO 3: TECH CLOUD & CAPABILITIES (2 Kolom) ================= */}
+        {(skills?.technical?.length > 0 || skills?.soft?.length > 0) && (
+          <div className="md:col-span-2">
+            <ScrollReveal delay={100}>
+              <div className="bg-white border border-slate-200/90 rounded-3xl p-6 shadow-sm h-full flex flex-col justify-between">
+                <div>
+                  <h3 className="text-xs font-mono tracking-widest text-slate-400 uppercase flex items-center gap-1.5 mb-4">
+                    <span className="w-1.5 h-1.5 bg-indigo-500 rounded-full" /> Capabilities & Tech Stack
+                  </h3>
+                  
+                  {/* Hard Skills */}
+                  {skills?.technical && skills.technical.length > 0 && (
+                    <div className="flex flex-wrap gap-1.5 mb-4">
+                      {skills.technical.map((s, i) => (
+                        <span key={i} className="px-2.5 py-1 bg-slate-900 text-white border border-slate-800 hover:bg-blue-600 hover:border-blue-500 rounded-lg text-xs font-mono transition-colors cursor-default font-bold shadow-sm">
+                          {s}
+                        </span>
+                      ))}
+                    </div>
+                  )}
 
-        {/* SKILLS */}
-        {(skills?.technical?.length > 0 || skills?.soft?.length > 0 || languages?.length > 0) && (
-          <section className="bg-slate-900/60 border border-slate-800/80 rounded-3xl p-8 shadow-xl backdrop-blur-sm hover:border-slate-700/60 transition-all duration-300">
-            <SectionHeading emoji="🛠️">Keahlian & Kompetensi</SectionHeading>
-            <div className="space-y-6">
-              {skills?.technical?.length > 0 && (
-                <div>
-                  <p className="text-xs font-black text-slate-500 mb-3 uppercase tracking-wider">Technical</p>
-                  <div className="flex flex-wrap gap-2">
-                    {skills.technical.map((s, i) => (
-                      <span key={i} className="px-3 py-1.5 bg-slate-950 text-slate-200 border border-slate-800 rounded-xl text-xs font-medium shadow-sm hover:bg-blue-600 hover:border-blue-500 transition-all cursor-default">
-                        {s}
-                      </span>
-                    ))}
-                  </div>
+                  {/* Soft Skills */}
+                  {skills?.soft && skills.soft.length > 0 && (
+                    <div className="flex flex-wrap gap-1.5 pt-3 border-t border-slate-100">
+                      {skills.soft.map((s, i) => (
+                        <span key={i} className="px-2.5 py-1 bg-indigo-50 text-indigo-700 border border-indigo-100/60 rounded-lg text-[11px] font-bold">
+                          • {s}
+                        </span>
+                      ))}
+                    </div>
+                  )}
                 </div>
-              )}
-              {skills?.soft?.length > 0 && (
-                <div>
-                  <p className="text-xs font-black text-slate-500 mb-3 uppercase tracking-wider">Soft Skills</p>
-                  <div className="flex flex-wrap gap-2">
-                    {skills.soft.map((s, i) => (
-                      <span key={i} className="px-3 py-1.5 bg-blue-950/40 text-sky-400 border border-blue-900/50 font-medium rounded-xl text-xs">
-                        {s}
-                      </span>
-                    ))}
-                  </div>
-                </div>
-              )}
-              {languages?.length > 0 && (
-                <div className="pt-4 border-t border-slate-800/80">
-                  <p className="text-xs font-black text-slate-500 mb-3 uppercase tracking-wider">🗣️ Bahasa</p>
-                  <div className="flex flex-wrap gap-2">
+
+                {/* Languages */}
+                {languages && languages.length > 0 && (
+                  <div className="mt-4 pt-3 border-t border-slate-100 flex flex-wrap items-center gap-2">
+                    <span className="text-[10px] font-mono text-slate-400 uppercase mr-1">Languages:</span>
                     {languages.map((l, i) => (
-                      <span key={i} className="px-3 py-1.5 bg-emerald-950/40 text-emerald-400 border border-emerald-900/40 font-medium rounded-xl text-xs">
+                      <span key={i} className="text-xs font-bold text-emerald-700 bg-emerald-50 border border-emerald-100/60 px-2 py-0.5 rounded-md">
                         {l}
                       </span>
                     ))}
                   </div>
-                </div>
-              )}
-            </div>
-          </section>
+                )}
+              </div>
+            </ScrollReveal>
+          </div>
         )}
 
-        {/* EXPERIENCE */}
-        {experience?.length > 0 && (
-          <section className="bg-slate-900/60 border border-slate-800/80 rounded-3xl p-8 shadow-xl backdrop-blur-sm hover:border-slate-700/60 transition-all duration-300">
-            <SectionHeading emoji="💼">Pengalaman Kerja</SectionHeading>
-            <div className="relative">
-              <div className="absolute left-4 top-0 bottom-0 w-0.5 bg-slate-800" />
-              <div className="space-y-8 pl-10">
-                {experience.map((exp, i) => (
-                  <div key={i} className="relative group">
-                    <div className="absolute -left-[30px] top-1.5 w-3 h-3 rounded-full bg-blue-600 ring-4 ring-slate-950 group-hover:bg-sky-400 transition-colors" />
-                    <div className="bg-slate-950/40 border border-slate-800/60 rounded-2xl p-5 shadow-sm group-hover:border-slate-700/50 transition-all">
-                      <div className="flex items-start justify-between flex-wrap gap-2 mb-3">
-                        <div>
-                          <h3 className="font-bold text-white text-base group-hover:text-blue-400 transition-colors">{exp.position}</h3>
-                          <p className="text-sky-400 font-bold text-sm">{exp.company}</p>
+        {/* ================= BENTO 4: SUMMARY CARD (1 Kolom) ================= */}
+        {profile.summary && (
+          <div>
+            <ScrollReveal>
+              <div className="bg-white border border-slate-200/90 rounded-3xl p-6 flex flex-col gap-3 shadow-sm h-full">
+                <h3 className="text-xs font-mono tracking-widest text-slate-400 uppercase flex items-center gap-1.5">
+                  <span className="w-1.5 h-1.5 bg-blue-500 rounded-full" /> Executive Summary
+                </h3>
+                <p className="text-xs text-slate-600 leading-relaxed text-justify mt-2 font-medium">
+                  {profile.summary}
+                </p>
+              </div>
+            </ScrollReveal>
+          </div>
+        )}
+
+        {/* ================= BENTO 5: EXPERIENCES DEPLOYMENT TIMELINE (2 Kolom) ================= */}
+        {experience && experience.length > 0 && (
+          <div className="md:col-span-2">
+            <ScrollReveal>
+              <div className="bg-white border border-slate-200/90 rounded-3xl p-6 md:p-8 shadow-sm">
+                <h3 className="text-xs font-mono tracking-widest text-slate-400 uppercase flex items-center gap-1.5 mb-6">
+                  <span className="w-1.5 h-1.5 bg-purple-500 rounded-full" /> Career Timeline Track
+                </h3>
+                
+                <div className="relative border-l border-slate-200 pl-4 ml-2 space-y-6">
+                  {experience.map((exp, i) => (
+                    <div key={i} className="relative group">
+                      <div className="absolute -left-[21px] top-1 w-2.5 h-2.5 rounded-full bg-white border border-slate-300 ring-4 ring-white group-hover:border-blue-600 transition-colors" />
+                      
+                      <div className="space-y-1.5">
+                        <div className="flex flex-wrap items-center justify-between gap-2">
+                          <div>
+                            <h4 className="font-bold text-slate-900 text-sm group-hover:text-blue-600 transition-colors">
+                              {exp.position}
+                            </h4>
+                            <p className="text-xs text-blue-600 font-extrabold">{exp.company}</p>
+                          </div>
+                          <span className="text-[10px] font-mono text-slate-600 bg-slate-50 px-2 py-1 rounded-md border border-slate-200">
+                            {exp.period}
+                          </span>
                         </div>
-                        <span className="text-xs font-semibold text-slate-400 bg-slate-900 px-3 py-1 rounded-lg border border-slate-800 shadow-inner">
-                          📅 {exp.period}
-                        </span>
+
+                        {exp.points && exp.points.length > 0 && (
+                          <ul className="space-y-1 pt-1">
+                            {exp.points.map((pt, pi) => (
+                              <li key={pi} className="text-xs text-slate-600 flex items-start gap-1.5 leading-relaxed font-medium">
+                                <span className="text-blue-500 mt-0.5 font-mono text-[10px]">›</span>
+                                <span>{pt}</span>
+                              </li>
+                            ))}
+                          </ul>
+                        )}
                       </div>
-                      {exp.points?.length > 0 && (
-                        <ul className="space-y-2">
-                          {exp.points.map((pt, pi) => (
-                            <li key={pi} className="text-sm text-slate-300 flex items-start gap-2.5">
-                              <span className="text-blue-500 mt-1 text-xs">⚡</span>
-                              <span className="leading-relaxed">{pt}</span>
-                            </li>
-                          ))}
-                        </ul>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            </ScrollReveal>
+          </div>
+        )}
+
+        {/* ================= BENTO 6: ACADEMIC BACKGROUND (1 Kolom) ================= */}
+        {education && education.length > 0 && (
+          <div>
+            <ScrollReveal delay={100}>
+              <div className="bg-white border border-slate-200/90 rounded-3xl p-6 shadow-sm flex flex-col justify-between h-full min-h-[250px]">
+                <h3 className="text-xs font-mono tracking-widest text-slate-400 uppercase flex items-center gap-1.5 mb-4">
+                  <span className="w-1.5 h-1.5 bg-amber-500 rounded-full" /> Academic Profile
+                </h3>
+                
+                <div className="space-y-4 my-auto w-full">
+                  {education.map((edu, i) => (
+                    <div key={i} className="p-3 bg-slate-50 border border-slate-200 rounded-xl space-y-1 hover:border-slate-300 transition-colors">
+                      <div className="flex items-center justify-between text-[9px] font-mono text-slate-400">
+                        <span>{edu.year}</span>
+                        <span className="text-blue-600 font-extrabold">DEGREE</span>
+                      </div>
+                      <h4 className="font-bold text-slate-900 text-xs truncate">{edu.institution}</h4>
+                      <p className="text-[11px] text-slate-600 font-medium truncate">{edu.degree}</p>
+                      {edu.description && (
+                        <p className="text-[10px] text-slate-500 italic pt-1 border-t border-slate-200 mt-1">
+                          {edu.description}
+                        </p>
                       )}
                     </div>
-                  </div>
-                ))}
+                  ))}
+                </div>
               </div>
-            </div>
-          </section>
+            </ScrollReveal>
+          </div>
         )}
 
-        {/* EDUCATION */}
-        {education?.length > 0 && (
-          <section className="bg-slate-900/60 border border-slate-800/80 rounded-3xl p-8 shadow-xl backdrop-blur-sm hover:border-slate-700/60 transition-all duration-300">
-            <SectionHeading emoji="🎓">Riwayat Pendidikan</SectionHeading>
-            <div className="grid gap-4">
-              {education.map((edu, i) => (
-                <div key={i} className="bg-white/5 border border-slate-800/60 rounded-2xl p-5 shadow-sm flex items-start gap-4 hover:bg-slate-950/80 transition-all">
-                  <div className="w-11 h-11 bg-blue-950 text-blue-400 rounded-xl flex items-center justify-center shrink-0 text-xl border border-blue-900/50 shadow-inner">🎓</div>
-                  <div className="w-full">
-                    <div className="flex justify-between items-start flex-wrap gap-2">
-                      <h3 className="font-bold text-white text-base leading-snug">{edu.institution}</h3>
-                      <span className="text-[10px] text-slate-400 font-semibold bg-slate-900 px-2 py-0.5 rounded border border-slate-800 shadow-sm">{edu.year}</span>
-                    </div>
-                    <p className="text-sky-400 text-sm font-semibold">{edu.degree}</p>
-                    {edu.description && <p className="text-slate-400 text-sm mt-2 pt-2 border-t border-dashed border-slate-800/80 leading-relaxed">{edu.description}</p>}
+        {/* ================= ✨ BENTO 7: HONORS & ACHIEVEMENTS (Ubah ke 2 Kolom untuk Mengisi Kekosongan Samping Academic Profile!) ================= */}
+        {achievements && achievements.length > 0 && (
+          <div className="md:col-span-2">
+            <ScrollReveal>
+              <div className="bg-white border border-slate-200/90 rounded-3xl p-6 shadow-sm h-full flex flex-col justify-between">
+                <div>
+                  <h3 className="text-xs font-mono tracking-widest text-slate-400 uppercase flex items-center gap-1.5 mb-5">
+                    <span className="w-1.5 h-1.5 bg-emerald-500 rounded-full" /> Verifiable Verification & Awards
+                  </h3>
+                  
+                  {/* Kita sesuaikan grid internalnya menjadi sm:grid-cols-2 agar tampil manis di ruang 2 kolom */}
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                    {achievements.map((ach, i) => (
+                      <div key={i} className="bg-slate-50 border border-slate-200 hover:border-slate-300 p-4 rounded-xl flex items-center gap-3 transition-all group">
+                        <div className="w-9 h-9 rounded-lg bg-amber-100 border border-amber-200 text-amber-600 text-lg flex items-center justify-center shrink-0 group-hover:scale-105 transition-transform">
+                          🏆
+                        </div>
+                        <p className="text-xs text-slate-800 font-bold leading-snug">{ach}</p>
+                      </div>
+                    ))}
                   </div>
                 </div>
-              ))}
-            </div>
-          </section>
+              </div>
+            </ScrollReveal>
+          </div>
         )}
 
-        {/* ACHIEVEMENTS */}
-        {achievements?.length > 0 && (
-          <section className="bg-slate-900/60 border border-slate-800/80 rounded-3xl p-8 shadow-xl backdrop-blur-sm hover:border-slate-700/60 transition-all duration-300">
-            <SectionHeading emoji="🏆">Pencapaian & Penghargaan</SectionHeading>
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-              {achievements.map((ach, i) => (
-                <div key={i} className="bg-amber-950/20 border border-amber-900/40 rounded-2xl p-5 shadow-sm flex items-start gap-3 hover:border-amber-700/50 transition-colors">
-                  <span className="text-2xl shrink-0">🏆</span>
-                  <p className="text-amber-200/90 text-sm font-bold leading-snug self-center">{ach}</p>
-                </div>
-              ))}
-            </div>
-          </section>
-        )}
-      </div>
+      </main>
 
-      {/* FOOTER PREMIUM */}
-      <footer className="border-t border-slate-900 bg-slate-900/40 backdrop-blur-sm py-12 text-center mt-20">
-        <p className="text-slate-500 text-sm mb-3 font-medium">✨ Dibuat Otomatis dengan CVCraft AI — HSI BS Vibathon 2026</p>
-        <Link to="/" className="inline-flex items-center gap-1.5 text-blue-400 hover:text-blue-300 text-sm font-bold bg-slate-900 px-4 py-2 rounded-xl transition-all border border-slate-800 hover:border-slate-700">
-          Buat Portofolio Kamu Sendiri →
+      {/* 🌟 FOOTER */}
+      <footer className="max-w-6xl mx-auto px-6 mt-20 pt-8 border-t border-slate-200 text-center space-y-4">
+        <p className="text-[11px] font-mono text-slate-400 tracking-wider font-bold">
+          SYSTEM CORE GENERATED BY CVCRAFT AI - HARUN VIBATHON 2026
+        </p>
+        <Link to="/" className="inline-flex items-center gap-1 px-4 py-2 bg-white hover:bg-slate-50 border border-slate-200 rounded-xl text-xs font-mono text-slate-500 hover:text-slate-900 transition-colors shadow-sm">
+          ⚡ Build Your Premium Engine
         </Link>
       </footer>
     </div>
-  )
-}
-
-function SectionHeading({ children, emoji }: { children: React.ReactNode; emoji: string }) {
-  return (
-    <h2 className="text-xl font-black text-white mb-6 flex items-center gap-2.5 border-b border-slate-800 pb-3">
-      <span className="text-2xl">{emoji}</span>
-      {children}
-    </h2>
   )
 }
