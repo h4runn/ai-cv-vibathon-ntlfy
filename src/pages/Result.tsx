@@ -131,8 +131,9 @@ export default function Result() {
       );
 
       // Membuat URL otomatis berdasarkan domain tempat web berjalan
-      const url = `${window.location.origin}/portfolio/${slug}`;
-      setPortfolioUrl(url);
+// DIPAKSA .toLowerCase() agar link yang dibuka di HP dijamin sinkron 100% dengan database slug!
+const url = `${window.location.origin}/portfolio/${slug.toLowerCase()}`;
+setPortfolioUrl(url.toLowerCase());
       setPortfolioModal(true);
     } catch (err) {
       console.error(err);
