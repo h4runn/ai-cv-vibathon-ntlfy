@@ -145,11 +145,12 @@ export default function Result() {
       <header className="no-print bg-white/80 backdrop-blur-md border-b border-gray-100 sticky top-0 z-20">
         <div className="max-w-7xl mx-auto px-6 py-4 flex items-center justify-between">
           <div className="flex items-center gap-2">
-            <span>📄</span>
-            <span className="font-bold text-gray-800 tracking-wide">
-              CVCraft AI
-            </span>
-          </div>
+  {/* Icon Dokumen Minimalis Modern */}
+  <svg className="w-5 h-5 text-blue-600" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.5}>
+    <path strokeLinecap="round" strokeLinejoin="round" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+  </svg>
+  <span className="font-bold text-gray-800 tracking-wide">CVCraft AI</span>
+</div>
           <button
             onClick={() => navigate("/dashboard")}
             className="text-sm text-gray-500 hover:text-gray-700 font-medium transition-colors"
@@ -201,11 +202,14 @@ export default function Result() {
 
             {/* 1. Tombol Download PDF (Biru Kaca Jelas & Solid Hover) */}
             <button
-              onClick={handleDownloadPDF}
-              className="w-full flex items-center justify-center gap-2.5 py-3 bg-blue-50/70 hover:bg-blue-600 text-blue-600 hover:text-white font-semibold rounded-xl text-sm transition-all duration-300 border border-blue-200 shadow-sm hover:shadow-md hover:shadow-blue-100 transform hover:-translate-y-0.5 active:translate-y-0"
-            >
-              <span className="text-base">📄</span> Download PDF
-            </button>
+  onClick={handleDownloadPDF}
+  className="w-full flex items-center justify-center gap-2 py-3 bg-blue-50/70 hover:bg-blue-600 text-blue-600 hover:text-white font-semibold rounded-xl text-sm transition-all duration-300 border border-blue-200 shadow-sm hover:shadow-md hover:shadow-blue-100 transform hover:-translate-y-0.5 active:translate-y-0"
+>
+  <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+    <path strokeLinecap="round" strokeLinejoin="round" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" />
+  </svg>
+  Download PDF
+</button>
 
             {/* 2. Kondisional Fitur Portofolio (Premium Glass vs Locked Glass) */}
             {isPremium ? (
@@ -230,42 +234,55 @@ export default function Result() {
             ) : (
               /* JIKA AKUN GRATIS: Gray Locked Glass */
               <div className="space-y-2.5 w-full pt-4">
-                <div className="relative w-full">
-                  <button
-                    disabled
-                    className="w-full flex items-center justify-center gap-2.5 py-3 bg-gray-100 text-gray-400 font-semibold rounded-xl text-sm cursor-not-allowed border border-gray-200 shadow-inner"
-                  >
-                    <span>🔒</span> Buat Halaman Portofolio
-                  </button>
+  <div className="relative w-full">
+    <button
+      disabled
+      className="w-full flex items-center justify-center gap-2.5 py-3 bg-gray-100 text-gray-400 font-semibold rounded-xl text-sm cursor-not-allowed border border-gray-200 shadow-inner"
+    >
+      {/* Icon Lock */}
+      <svg className="w-4 h-4 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.5}>
+        <path strokeLinecap="round" strokeLinejoin="round" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
+      </svg>
+      Buat Halaman Portofolio
+    </button>
 
-                  <span className="absolute -top-6 left-1/2 -translate-x-1/2 bg-gradient-to-r from-amber-500 to-amber-600 text-white text-[9px] px-2.5 py-0.5 rounded-full font-black shadow-sm whitespace-nowrap tracking-wider animate-pulse border border-amber-400/30">
-                    ⭐ FITUR PREMIUM
-                  </span>
-                </div>
+    {/* Label Premium Berkelas tanpa emoji */}
+    <span className="absolute -top-6 left-1/2 -translate-x-1/2 bg-gradient-to-r from-amber-500 to-amber-600 text-white text-[9px] px-2.5 py-0.5 rounded-full font-black shadow-sm whitespace-nowrap tracking-wider animate-pulse border border-amber-400/30">
+      PREMIUM FEATURE
+    </span>
+  </div>
 
                 {/* Tombol Simulasi Pembayaran (Amber Glass Presisi dengan Kontras Hover Tinggi) */}
-                <button
-                  type="button"
-                  onClick={() => {
-                    alert(
-                      "✨ [SIMULASI PREMIUM ACTIVATED]\nPembayaran via QRIS Sukses. Fitur Cloud Sync Portofolio Online Anda telah aktif!"
-                    );
-                    setIsPremium(true);
-                  }}
-                  className="w-full py-2.5 bg-amber-50/80 hover:bg-slate-900 text-amber-700 hover:text-white hover:border-slate-900 font-bold rounded-xl text-[11px] transition-all duration-300 text-center border border-amber-200 shadow-sm flex items-center justify-center gap-1.5 transform hover:scale-[1.01]"
-                >
-                  ⚡ Coba Premium (Simuasi)
-                </button>
+<button
+  type="button"
+  onClick={() => {
+    alert(
+      "✨ [SIMULASI PREMIUM ACTIVATED]\nPembayaran via QRIS Sukses. Fitur Cloud Sync Portofolio Online Anda telah aktif!"
+    );
+    setIsPremium(true);
+  }}
+  className="w-full py-2.5 bg-amber-50/80 hover:bg-slate-900 text-amber-700 hover:text-white hover:border-slate-900 font-bold rounded-xl text-[11px] transition-all duration-300 text-center border border-amber-200 shadow-sm flex items-center justify-center gap-1.5 transform hover:scale-[1.01]"
+>
+  {/* Mengganti ⚡ dengan SVG Petir Minimalis */}
+  <svg className="w-3.5 h-3.5 fill-current" viewBox="0 0 20 20">
+    <path fillRule="evenodd" d="M11.3 1.046A1 1 0 0112 2v5h4a1 1 0 01.82 1.573l-7 10A1 1 0 018 18v-5H4a1 1 0 01-.82-1.573l7-10a1 1 0 011.12-.38z" clipRule="evenodd" />
+  </svg>
+  Coba Premium (Simulasi)
+</button>
               </div>
             )}
 
-            {/* 3. Tombol Generate Ulang (Clean Slate Dark Hover) */}
-            <button
-              onClick={() => navigate("/create")}
-              className="w-full flex items-center justify-center gap-2.5 py-3 bg-slate-100/80 hover:bg-slate-800 text-slate-700 hover:text-white font-semibold rounded-xl text-sm transition-all duration-300 border border-slate-200 shadow-sm transform hover:-translate-y-0.5 active:translate-y-0 mt-2"
-            >
-              <span className="text-base">🔄</span> Generate Ulang
-            </button>
+            {/* 3. Tombol Generate Ulang*/}
+<button
+  onClick={() => navigate("/create")}
+  className="w-full flex items-center justify-center gap-2.5 py-3 bg-slate-100/80 hover:bg-slate-800 text-slate-700 hover:text-white font-semibold rounded-xl text-sm transition-all duration-300 border border-slate-200 shadow-sm transform hover:-translate-y-0.5 active:translate-y-0 mt-2"
+>
+  {/* Mengganti 🔄 dengan SVG Refresh Modern */}
+  <svg className="w-4 h-4 stroke-current" fill="none" viewBox="0 0 24 24" strokeWidth={2.5}>
+    <path strokeLinecap="round" strokeLinejoin="round" d="M16.023 9.348h4.992v-.001M2.985 19.644v-4.992m0 0h4.992m-4.993 0l3.181 3.183a8.25 8.25 0 0013.803-3.7M4.031 9.865a8.25 8.25 0 0113.803-3.7l3.181 3.182m0-4.991v4.99" />
+  </svg>
+  Generate Ulang
+</button>
           </div>
 
           {/* CV Info Card (Glassmorphism) */}
@@ -365,34 +382,37 @@ export default function Result() {
               </p>
             </div>
 
-            {/* BANNER PENGINGAT UNTUK DEMO JURI LOMBA */}
-            <div className="mb-4 bg-amber-50 border border-amber-200 rounded-2xl p-4 text-left shadow-inner">
-              <div className="flex items-start gap-2.5">
-                <span className="text-base shrink-0 mt-0.5">⚠️</span>
-                <div className="space-y-1">
-                  <h4 className="text-xs font-bold text-amber-800 uppercase tracking-wide">
-                    Catatan Penting
-                  </h4>
-                  <p className="text-[11px] text-amber-700 leading-relaxed">
-                    Tautan ini berbasis penyimpanan browser lokal Anda. Hasil
-                    portofolio dapat diakses dengan sempurna di perangkat ini.
-                  </p>
-                  <p className="text-[11px] text-amber-700 leading-relaxed pt-0.5">
-                    Untuk mendistribusikan link secara publik lintas perangkat,
-                    fitur{" "}
-                    <span className="font-semibold text-blue-600">
-                      Cloud Sync & Permanent Database URL
-                    </span>{" "}
-                    akan aktif otomatis pada versi{" "}
-                    <span className="font-bold text-amber-600 uppercase">
-                      Premium ⭐
-                    </span>
-                    .
-                  </p>
-                </div>
-              </div>
-            </div>
-
+            {/* BANNER PENGINGAT */}
+           <div className="mb-4 bg-slate-900 border border-slate-800 rounded-2xl p-4 text-left shadow-2xl">
+  <div className="flex items-start gap-3">
+    {/* Ikon Terminal/System */}
+    <div className="mt-0.5 text-blue-500 font-mono text-[10px] shrink-0">
+      [SYS]
+    </div>
+    
+    <div className="space-y-1">
+      <h4 className="text-xs font-bold text-blue-400 uppercase tracking-widest font-mono">
+        Catatan Penting
+      </h4>
+      
+      <p className="text-[11px] text-slate-400 leading-relaxed">
+        Tautan ini berbasis penyimpanan browser lokal Anda. Hasil portofolio dapat diakses dengan sempurna di perangkat ini.
+      </p>
+      
+      <p className="text-[11px] text-slate-400 leading-relaxed pt-0.5">
+        Untuk mendistribusikan link secara publik lintas perangkat, fitur{" "}
+        <span className="font-semibold text-blue-500">
+          Cloud Sync & Permanent Database URL
+        </span>{" "}
+        akan aktif otomatis pada versi{" "}
+        <span className="font-bold text-amber-500 uppercase">
+          Premium
+        </span>
+        .
+      </p>
+    </div>
+  </div>
+</div>
             <div className="bg-gray-50 border border-gray-150 rounded-xl p-3 mb-4 flex items-center gap-2">
               <span className="text-xs text-gray-600 flex-1 truncate font-mono">
                 {portfolioUrl}

@@ -522,14 +522,41 @@ export default function CreateCV() {
       {/* Header */}
       <header className="bg-gray-900 border-b border-white/10 px-6 py-4 flex items-center justify-between shrink-0">
         <div className="flex items-center gap-2">
-          <span>📄</span>
+          {/* GANTI ICON EMOTIKON KERTAS MENJADI SVG DI BAWAH INI */}
+          <svg
+            className="w-5 h-5 text-blue-500"
+            fill="none"
+            stroke="currentColor"
+            viewBox="0 0 24 24"
+          >
+            <path
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              strokeWidth={2}
+              d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"
+            />
+          </svg>
           <span className="font-bold text-white tracking-wide">
             CVCraft AI Studio
           </span>
         </div>
         {draftSaved && (
-          <span className="text-xs text-emerald-400 font-medium flex items-center gap-1">
-            💾 Draft tersimpan otomatis
+          /* GANTI ICON DISKET MENJADI SVG DI BAWAH INI */
+          <span className="text-xs text-emerald-400 font-medium flex items-center gap-1.5">
+            <svg
+              className="w-4 h-4"
+              fill="none"
+              stroke="currentColor"
+              viewBox="0 0 24 24"
+            >
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                strokeWidth={2}
+                d="M8 7H5a2 2 0 00-2 2v9a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2h-3m-1 4l-3 3m0 0l-3-3m3 3V4"
+              />
+            </svg>
+            Draft tersimpan otomatis
           </span>
         )}
       </header>
@@ -734,13 +761,25 @@ export default function CreateCV() {
                     <button
                       type="button"
                       onClick={() => setShowFreshGraduateModal(true)}
-                      className="text-xs text-blue-400 hover:text-blue-300 bg-blue-500/10 border border-blue-500/20 px-2.5 py-1 rounded-lg font-medium transition-all"
+                      className="text-xs text-blue-400 hover:text-blue-300 bg-blue-500/10 border border-blue-500/20 px-2.5 py-1 rounded-lg font-medium transition-all flex items-center gap-1"
                     >
-                      💡 Belum punya pengalaman kerja? Klik di sini
+                      <svg
+                        className="w-3.5 h-3.5 text-blue-400"
+                        fill="none"
+                        stroke="currentColor"
+                        viewBox="0 0 24 24"
+                      >
+                        <path
+                          strokeLinecap="round"
+                          strokeLinejoin="round"
+                          strokeWidth={2}
+                          d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
+                        />
+                      </svg>
+                      Belum punya pengalaman kerja? Klik di sini
                     </button>
                   </div>
-
-                  {/* Pembuka Grid Input yang Kamu Maksud - Tetap Pertahankan ke Bawah */}
+                  {/* Pembuka Grid Input */}
                   <div className="grid grid-cols-2 gap-3">
                     <div>
                       <label className={labelClass}>
@@ -787,7 +826,7 @@ export default function CreateCV() {
                         type="button"
                         onClick={handleAIPolishExperience}
                         disabled={polishingExp || !form.experiencePoints}
-                        className="flex items-center gap-1 px-2 py-0.5 text-[11px] font-bold bg-gradient-to-r from-violet-600 to-indigo-600 text-white rounded-md disabled:opacity-40 transition-all shadow-sm"
+                        className="flex items-center gap-1 px-2.5 py-1 text-[11px] font-bold bg-gradient-to-r from-violet-600 to-indigo-600 text-white rounded-md disabled:opacity-40 transition-all shadow-sm"
                       >
                         {polishingExp ? (
                           <>
@@ -795,7 +834,20 @@ export default function CreateCV() {
                             Polishing...
                           </>
                         ) : (
-                          <>✨ AI Polish (Action Verbs)</>
+                          <>
+                            <svg
+                              className="w-3 h-3 text-white inline animate-pulse"
+                              fill="currentColor"
+                              viewBox="0 0 24 24"
+                            >
+                              <path
+                                d="M9 21c0 .55.45 1 1 1h4c.55 0 1-.45 1-1v-1H9v1zm3-19C8.14 2 5 5.14 5 9c0 2.38 1.19 4.47 3 5.74V17c0 .55.45 1 1 1h6c.55 0 1-.45 1-1v-2.26c1.81-1.27 3-3.36 3-5.74 0-3.86-3.14-7-7-7zm2.85 11.1l-.85.6V16h-4v-2.3l-.85-.6C7.8 12.16 7 10.63 7 9c0-2.76 2.24-5 5-5s5 2.24 5 5c0 1.63-.8 3.16-2.15 4.1z"
+                                stroke="currentColor"
+                                strokeWidth="1"
+                              />
+                            </svg>
+                            AI Polish (Action Verbs)
+                          </>
                         )}
                       </button>
                     </div>
@@ -825,9 +877,41 @@ export default function CreateCV() {
                     <div className="flex justify-between items-center mt-1 px-1">
                       <span className="text-[10px] text-gray-500">
                         {/* Memberikan tips rekomendasi panjang teks ATS */}
-                        {(form.experiencePoints || "").length < 50
-                          ? "💡 Tulis lebih detail pencapaianmu agar dilirik ATS."
-                          : "✨ Panjang deskripsi sudah cukup ideal."}
+                        {(form.experiencePoints || "").length < 50 ? (
+                          <span className="flex items-center gap-1">
+                            <svg
+                              className="w-3 h-3 text-amber-500 inline"
+                              fill="none"
+                              stroke="currentColor"
+                              viewBox="0 0 24 24"
+                            >
+                              <path
+                                strokeLinecap="round"
+                                strokeLinejoin="round"
+                                strokeWidth={2}
+                                d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"
+                              />
+                            </svg>
+                            Tulis lebih detail pencapaianmu agar dilirik ATS.
+                          </span>
+                        ) : (
+                          <span className="flex items-center gap-1 text-emerald-400">
+                            <svg
+                              className="w-3 h-3 text-emerald-400 inline"
+                              fill="none"
+                              stroke="currentColor"
+                              viewBox="0 0 24 24"
+                            >
+                              <path
+                                strokeLinecap="round"
+                                strokeLinejoin="round"
+                                strokeWidth={2}
+                                d="M5 13l4 4L19 7"
+                              />
+                            </svg>
+                            Panjang deskripsi sudah cukup ideal.
+                          </span>
+                        )}
                       </span>
                       <span
                         className={`text-[10px] font-mono font-semibold ${
@@ -1000,31 +1084,108 @@ export default function CreateCV() {
                 </div>
               )}
 
-              {/* Step 4: Generate */}
+              {/* Step 4: Finalization & AI Generation */}
               {step === 4 && (
-                <div className="text-center py-4">
-                  <span className="text-3xl block mb-2">🚀</span>
-                  <h3 className="text-base font-bold mb-1">
-                    Semua data siap diproses!
-                  </h3>
-                  <p className="text-xs text-gray-400 max-w-xs mx-auto mb-4">
-                    AI akan menyempurnakan struktur tata bahasa dokumen agar
-                    100% lolos sistem skrining perusahaan.
-                  </p>
+                <div className="space-y-4 text-left py-2">
+                  <div className="border-b border-white/10 pb-3">
+                    <h3 className="text-sm font-bold text-white tracking-wide">
+                      Tahap Akhir: Optimalisasi Dokumen AI
+                    </h3>
+                    <p className="text-[11px] text-gray-400 mt-0.5">
+                      Sistem siap melakukan sinkronisasi akhir data formulir ke
+                      dalam standarisasi layout ATS global.
+                    </p>
+                  </div>
+
+                  {/* KOTAK PERINGATAN KEPADATAN DOKUMEN*/}
+                  <div className="bg-gray-950/60 border border-amber-500/20 rounded-xl p-3.5 space-y-2">
+                    <div className="flex items-center gap-2 text-[10px] font-bold text-amber-400 uppercase tracking-wider">
+                      <svg
+                        className="w-3.5 h-3.5 text-amber-400 shrink-0"
+                        fill="none"
+                        viewBox="0 0 24 24"
+                        stroke="currentColor"
+                        strokeWidth={2.5}
+                      >
+                        <path
+                          strokeLinecap="round"
+                          strokeLinejoin="round"
+                          d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"
+                        />
+                      </svg>
+                      Pemberitahuan Proporsi Cetak (A4 Standard)
+                    </div>
+
+                    <p className="text-[11px] text-gray-300 leading-relaxed font-sans">
+                      Untuk menghasilkan dokumen PDF yang elegan dan optimal,
+                      pastikan volume informasi yang Anda masukkan cukup padat
+                      untuk memenuhi ruang kertas A4. Dokumen yang terlalu
+                      ringkas akan menyisakan ruang kosong di bagian bawah, yang
+                      dapat mengurangi nilai estetika profesional di mata
+                      Recruiter.
+                    </p>
+
+                    <div className="bg-black/40 border border-white/5 rounded-lg p-2.5 space-y-1.5 text-[10px] text-gray-400 font-sans">
+                      <div className="flex items-start gap-1.5">
+                        <span className="text-amber-500 font-bold">•</span>
+                        <span>
+                          Jika ATS Score Anda masih berada di bawah angka ideal,
+                          sangat disarankan untuk kembali ke tahap sebelumnya
+                          guna menambahkan detail riwayat pengalaman.
+                        </span>
+                      </div>
+                      <div className="flex items-start gap-1.5">
+                        <span className="text-amber-500 font-bold">•</span>
+                        <span>
+                          Gunakan fitur AI Polish pada kolom deskripsi
+                          sebelumnya untuk memperluas penjabaran tugas secara
+                          otomatis menggunakan kosakata aksi profesional.
+                        </span>
+                      </div>
+                    </div>
+                  </div>
 
                   {error && (
-                    <p className="text-xs text-red-400 mb-2">{error}</p>
+                    <div className="bg-red-500/10 border border-red-500/20 text-red-400 p-2.5 rounded-xl text-[11px] font-medium font-sans">
+                      {error}
+                    </div>
                   )}
 
-                  <button
-                    onClick={handleGenerate}
-                    disabled={loading || !form.name || !form.jobTitle}
-                    className="w-full py-3 bg-gradient-to-r from-blue-600 to-violet-600 font-bold rounded-xl text-sm transition-all shadow-md disabled:opacity-50"
-                  >
-                    {loading
-                      ? "AI sedang menyusun CV terbaikmu..."
-                      : "✨ Generate CV Akhir"}
-                  </button>
+                  {/* ACTION BUTTON */}
+                  <div className="pt-1">
+                    <button
+                      onClick={handleGenerate}
+                      disabled={loading || !form.name || !form.jobTitle}
+                      className="w-full py-3 bg-blue-600 hover:bg-blue-700 disabled:bg-gray-800 disabled:text-gray-500 text-white font-bold rounded-xl text-xs uppercase tracking-wider transition-all shadow-md flex items-center justify-center gap-2"
+                    >
+                      {loading ? (
+                        <>
+                          <svg
+                            className="animate-spin h-3.5 w-3.5 text-white"
+                            fill="none"
+                            viewBox="0 0 24 24"
+                          >
+                            <circle
+                              className="opacity-25"
+                              cx="12"
+                              cy="12"
+                              r="10"
+                              stroke="currentColor"
+                              strokeWidth="4"
+                            />
+                            <path
+                              className="opacity-75"
+                              fill="currentColor"
+                              d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
+                            />
+                          </svg>
+                          Memproses Formulasi Dokumen...
+                        </>
+                      ) : (
+                        "Eksekusi Formulasi & Generate CV"
+                      )}
+                    </button>
+                  </div>
                 </div>
               )}
             </div>
@@ -1052,8 +1213,21 @@ export default function CreateCV() {
                 style={{ width: `${atsScoreData.score}%` }}
               />
             </div>
-            <p className="text-[11px] text-gray-400 italic">
-              💡 Suggestion: {atsScoreData.currentTip}
+            <p className="text-[11px] text-gray-400 italic flex items-center gap-1">
+              <svg
+                className="w-3.5 h-3.5 text-blue-400 shrink-0"
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth={2}
+                  d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
+                />
+              </svg>
+              Suggestion: {atsScoreData.currentTip}
             </p>
           </div>
 
@@ -1311,9 +1485,24 @@ export default function CreateCV() {
             {/* Header Modal */}
             <div className="flex justify-between items-start border-b border-white/5 pb-2.5">
               <div>
-                <h3 className="text-xs font-bold text-white flex items-center gap-1.5">
-                  💡 Panduan Pengalaman Kerja (Fresh Graduate)
-                </h3>
+                <div className="flex items-center gap-2">
+                  <svg
+                    className="w-5 h-5 text-blue-400"
+                    fill="none"
+                    stroke="currentColor"
+                    viewBox="0 0 24 24"
+                  >
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      strokeWidth={2}
+                      d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z"
+                    />
+                  </svg>
+                  <h3 className="font-bold text-sm text-white">
+                    Panduan Pengalaman Kerja (Fresh Graduate)
+                  </h3>
+                </div>
                 <p className="text-[11px] text-gray-400 mt-0.5">
                   Belum memiliki pengalaman kerja formal? Jangan berkecil hati!
                   Pilih rumpun template instan atau tulis pengalaman
@@ -1340,8 +1529,11 @@ export default function CreateCV() {
                   onClick={() => handleSelectTemplate("umum")}
                   className="text-left p-2.5 bg-gray-900 hover:bg-gray-800/80 border border-gray-800 hover:border-gray-700 rounded-xl transition-all group"
                 >
-                  <div className="font-bold text-[11px] text-blue-400 group-hover:text-blue-300">
-                    📦 Umum & Operasional
+                  <div className="font-bold text-[11px] text-blue-400 group-hover:text-blue-300 flex items-center gap-1.5">
+                    <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 11m8 4V5" />
+                    </svg>
+                    Umum & Operasional
                   </div>
                   <div className="text-[10px] text-gray-400 mt-0.5 leading-relaxed">
                     Office boy, kru toko, driver, security, dll.
@@ -1353,8 +1545,11 @@ export default function CreateCV() {
                   onClick={() => handleSelectTemplate("it")}
                   className="text-left p-2.5 bg-gray-900 hover:bg-gray-800/80 border border-gray-800 hover:border-gray-700 rounded-xl transition-all group"
                 >
-                  <div className="font-bold text-[11px] text-purple-400 group-hover:text-purple-300">
-                    💻 Teknologi & Digital
+                  <div className="font-bold text-[11px] text-purple-400 group-hover:text-purple-300 flex items-center gap-1.5">
+                    <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9.75 17L9 20l-1 1h8l-1-1-.75-3M3 13h18M5 17h14a2 2 0 002-2V5a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
+                    </svg>
+                    Teknologi & Digital
                   </div>
                   <div className="text-[10px] text-gray-400 mt-0.5 leading-relaxed">
                     Software dev, IT support, data entry, desainer.
@@ -1366,8 +1561,11 @@ export default function CreateCV() {
                   onClick={() => handleSelectTemplate("admin")}
                   className="text-left p-2.5 bg-gray-900 hover:bg-gray-800/80 border border-gray-800 hover:border-gray-700 rounded-xl transition-all group"
                 >
-                  <div className="font-bold text-[11px] text-emerald-400 group-hover:text-emerald-300">
-                    📁 Admin & Keuangan
+                  <div className="font-bold text-[11px] text-emerald-400 group-hover:text-emerald-300 flex items-center gap-1.5">
+                    <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 7v10a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2h-6l-2-2H5a2 2 0 00-2 2z" />
+                    </svg>
+                    Admin & Keuangan
                   </div>
                   <div className="text-[10px] text-gray-400 mt-0.5 leading-relaxed">
                     Sekretaris, admin medsos, kasir, logistik.
@@ -1379,8 +1577,11 @@ export default function CreateCV() {
                   onClick={() => handleSelectTemplate("sales")}
                   className="text-left p-2.5 bg-gray-900 hover:bg-gray-800/80 border border-gray-800 hover:border-gray-700 rounded-xl transition-all group"
                 >
-                  <div className="font-bold text-[11px] text-amber-400 group-hover:text-amber-300">
-                    🤝 Sales & Service
+                  <div className="font-bold text-[11px] text-amber-400 group-hover:text-amber-300 flex items-center gap-1.5">
+                    <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z" />
+                    </svg>
+                    Sales & Service
                   </div>
                   <div className="text-[10px] text-gray-400 mt-0.5 leading-relaxed">
                     Sales lapangan, customer service, marketing.
@@ -1394,17 +1595,22 @@ export default function CreateCV() {
               <button
                 type="button"
                 onClick={() => handleSelectTemplate("universal")}
-                className="w-full text-center py-2 px-3 bg-blue-500/10 hover:bg-blue-500/20 border border-blue-500/20 text-blue-400 rounded-xl font-medium text-[11px] transition-all"
+                className="w-full text-center py-2 px-3 bg-blue-500/10 hover:bg-blue-500/20 border border-blue-500/20 text-blue-400 rounded-xl font-medium text-[11px] transition-all flex items-center justify-center gap-1.5"
               >
-                🔍 Pekerjaan saya tidak ada di atas? (Klik untuk Panduan
-                Universal)
+                <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+                </svg>
+                Pekerjaan saya tidak ada di atas? (Klik untuk Panduan Universal)
               </button>
             </div>
 
-            {/* 🌟 BAGIAN 3: IDE JURUS BARU KAMU - INSPIRASI PENGALAMAN ALTERNATIF */}
+            {/* Bagian 3: INSPIRASI PENGALAMAN ALTERNATIF */}
             <div className="bg-gray-900/40 border border-white/5 rounded-xl p-3 space-y-2">
-              <div className="text-[10px] font-bold text-amber-400 uppercase tracking-wider flex items-center gap-1">
-                💡 Kamu Punya Pengalaman Ini? Tulis Saja!
+              <div className="text-[10px] font-bold text-amber-400 uppercase tracking-wider flex items-center gap-1.5">
+                <svg className="w-3.5 h-3.5 text-amber-400 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                </svg>
+                Kamu Punya Pengalaman Ini? Tulis Saja!
               </div>
               <p className="text-[11px] text-gray-400 leading-relaxed">
                 HRD tidak melulu mencari riwayat kerja kantoran. Kamu bisa
@@ -1413,29 +1619,29 @@ export default function CreateCV() {
 
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 text-[10px] leading-relaxed">
                 <div className="bg-black/30 p-2 rounded-lg border border-white/5">
-                  <span className="font-bold text-blue-400 block">
-                    ✨ Proyek Mandiri / Portofolio
+                  <span className="font-bold text-blue-400 block mb-0.5">
+                    Proyek Mandiri / Portofolio
                   </span>
                   Ngetik proyek coding sendiri, eksperimen meracik menu kopi,
                   atau mengelola operasional tertentu secara independen.
                 </div>
                 <div className="bg-black/30 p-2 rounded-lg border border-white/5">
-                  <span className="font-bold text-purple-400 block">
-                    👥 Organisasi / Kepanitiaan
+                  <span className="font-bold text-purple-400 block mb-0.5">
+                    Organisasi / Kepanitiaan
                   </span>
                   Pengalaman aktif pengurus OSIS, kepengurusan UKM kampus, atau
                   panitia aktif acara 17-an / Karang Taruna.
                 </div>
                 <div className="bg-black/30 p-2 rounded-lg border border-white/5">
-                  <span className="font-bold text-emerald-400 block">
-                    💼 Magang (Internship) / PKL
+                  <span className="font-bold text-emerald-400 block mb-0.5">
+                    Magang (Internship) / PKL
                   </span>
                   Praktik Kerja Lapangan dari sekolah/kampus. Bagian ini
                   memiliki nilai jual yang sangat tinggi di mata recruiter!
                 </div>
                 <div className="bg-black/30 p-2 rounded-lg border border-white/5">
-                  <span className="font-bold text-amber-400 block">
-                    🛠️ Freelance / Usaha Keluarga
+                  <span className="font-bold text-amber-400 block mb-0.5">
+                    Freelance / Usaha Keluarga
                   </span>
                   Bekerja lepas menerima jasa tertentu harian, atau membantu
                   menjaga pembukuan & operasional toko milik orang tua.
@@ -1446,7 +1652,7 @@ export default function CreateCV() {
             {/* Bagian 4: Rumus Kalimat ATS */}
             <div className="bg-gray-900/70 border border-white/5 rounded-xl p-3 space-y-1.5">
               <div className="text-[10px] font-bold text-gray-400 uppercase tracking-wider">
-                📝 Rumus Kalimat Deskripsi (ATS-Friendly)
+                Rumus Kalimat Deskripsi (ATS-Friendly)
               </div>
               <div className="bg-black/40 p-2.5 rounded-lg border border-white/5 space-y-1 font-mono text-[9px] text-gray-300 overflow-x-auto">
                 <div>

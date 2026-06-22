@@ -50,7 +50,7 @@ export default function Dashboard() {
             to="/create"
             className="inline-flex items-center gap-2 px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white font-semibold rounded-xl text-sm transition-all"
           >
-            ✨ Buat CV
+            Buat CV
           </Link>
         </div>
       </header>
