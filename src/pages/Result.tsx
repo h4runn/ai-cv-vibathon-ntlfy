@@ -56,28 +56,28 @@ export default function Result() {
 
   // 2. PERBAIKAN UTAMA: Sistem download otomatis premium presisi A4
   const handleDownloadPDF = () => {
-  const element = document.getElementById("cv-content");
-  if (!element) return;
+    const element = document.getElementById("cv-content");
+    if (!element) return;
 
-  const options = {
-    margin: 0,
-    filename: `CV_${cvData?.profile?.name || "Pengguna"}.pdf`,
-    image: { type: "jpeg", quality: 0.98 },
-    html2canvas: {
-      scale: 2,
-      useCORS: true,
-      logging: false,
-      width: 794,
-      windowWidth: 794,
-    },
-    jsPDF: { unit: "px", format: [794, 1123], orientation: "portrait" },
+    const options = {
+      margin: 0,
+      filename: `CV_${cvData?.profile?.name || "Pengguna"}.pdf`,
+      image: { type: "jpeg", quality: 0.98 },
+      html2canvas: {
+        scale: 2,
+        useCORS: true,
+        logging: false,
+        width: 794,
+        windowWidth: 794,
+      },
+      jsPDF: { unit: "px", format: [794, 1123], orientation: "portrait" },
+    };
+
+    setTimeout(() => {
+      // @ts-ignore
+      html2pdf().set(options).from(element).save();
+    }, 300);
   };
-
-  setTimeout(() => {
-    // @ts-ignore
-    html2pdf().set(options).from(element).save();
-  }, 300);
-};;
 
   const generateSlug = (name: string) => {
     return name
@@ -146,7 +146,9 @@ export default function Result() {
         <div className="max-w-7xl mx-auto px-6 py-4 flex items-center justify-between">
           <div className="flex items-center gap-2">
             <span>📄</span>
-            <span className="font-bold text-gray-800 tracking-wide">CVCraft AI</span>
+            <span className="font-bold text-gray-800 tracking-wide">
+              CVCraft AI
+            </span>
           </div>
           <button
             onClick={() => navigate("/dashboard")}
@@ -159,10 +161,8 @@ export default function Result() {
 
       {/* Main Container Wrapper */}
       <div className="max-w-7xl mx-auto px-6 py-8 flex flex-col md:flex-row gap-8 relative z-10">
-        
         {/* Left Panel — Controls dengan Efek Glassmorphism Modern */}
         <div className="no-print w-full md:w-72 shrink-0 space-y-4">
-          
           {/* Template Selector Card (Glassmorphism + Shimmer Glow) */}
           <div className="bg-white/70 backdrop-blur-md rounded-2xl border border-white/60 p-5 shadow-sm relative overflow-hidden">
             <h3 className="font-bold text-gray-700 mb-4 text-sm tracking-wide">
@@ -184,7 +184,9 @@ export default function Result() {
                     {t.label}
                   </span>
                   {template === t.id && (
-                    <span className="ml-auto text-blue-500 text-xs font-bold">✓</span>
+                    <span className="ml-auto text-blue-500 text-xs font-bold">
+                      ✓
+                    </span>
                   )}
                 </button>
               ))}
@@ -193,7 +195,9 @@ export default function Result() {
 
           {/* Actions Card (Glassmorphism Premium - High Contrast Buttons) */}
           <div className="bg-white/70 backdrop-blur-md rounded-2xl border border-white/60 p-5 space-y-3.5 shadow-sm">
-            <h3 className="font-bold text-gray-700 mb-1 text-sm tracking-wide">Aksi</h3>
+            <h3 className="font-bold text-gray-700 mb-1 text-sm tracking-wide">
+              Aksi
+            </h3>
 
             {/* 1. Tombol Download PDF (Biru Kaca Jelas & Solid Hover) */}
             <button
@@ -218,7 +222,8 @@ export default function Result() {
                   </>
                 ) : (
                   <>
-                    <span className="text-base">🌐</span> Buat Halaman Portofolio
+                    <span className="text-base">🌐</span> Buat Halaman
+                    Portofolio
                   </>
                 )}
               </button>
@@ -237,8 +242,8 @@ export default function Result() {
                     ⭐ FITUR PREMIUM
                   </span>
                 </div>
-                
-                {/* Tombol Simulasi Pembayaran (Amber Glass Presisi) */}
+
+                {/* Tombol Simulasi Pembayaran (Amber Glass Presisi dengan Kontras Hover Tinggi) */}
                 <button
                   type="button"
                   onClick={() => {
@@ -247,9 +252,9 @@ export default function Result() {
                     );
                     setIsPremium(true);
                   }}
-                  className="w-full py-2.5 bg-amber-50/80 hover:bg-gradient-to-r hover:from-amber-500 hover:to-yellow-500 text-amber-700 hover:text-white font-bold rounded-xl text-[11px] transition-all duration-300 text-center border border-amber-200 shadow-sm flex items-center justify-center gap-1.5 transform hover:scale-[1.01]"
+                  className="w-full py-2.5 bg-amber-50/80 hover:bg-slate-900 text-amber-700 hover:text-white hover:border-slate-900 font-bold rounded-xl text-[11px] transition-all duration-300 text-center border border-amber-200 shadow-sm flex items-center justify-center gap-1.5 transform hover:scale-[1.01]"
                 >
-                  ⚡ Aktifkan Premium (Demo Lomba)
+                  ⚡ Coba Premium (Simuasi)
                 </button>
               </div>
             )}
@@ -265,7 +270,9 @@ export default function Result() {
 
           {/* CV Info Card (Glassmorphism) */}
           <div className="bg-white/70 backdrop-blur-md rounded-2xl border border-white/60 p-5 shadow-sm">
-            <h3 className="font-bold text-gray-700 mb-3 text-sm tracking-wide">Info CV</h3>
+            <h3 className="font-bold text-gray-700 mb-3 text-sm tracking-wide">
+              Info CV
+            </h3>
             <div className="space-y-1.5 text-sm text-gray-500">
               <p>
                 <span className="font-medium text-gray-700">Nama:</span>{" "}
@@ -286,22 +293,29 @@ export default function Result() {
           <div className="bg-gradient-to-br from-slate-900 to-blue-950 rounded-2xl p-4 text-white shadow-lg border border-slate-800 relative overflow-hidden group">
             <div className="absolute top-0 right-0 w-16 h-16 bg-blue-500/10 rounded-full blur-xl group-hover:bg-blue-500/20 transition-all duration-500" />
             <div className="flex items-center justify-between mb-2">
-              <span className="text-xs font-bold text-blue-400 tracking-wider uppercase">AI Engine Status</span>
-              <span className="text-[10px] bg-blue-500/20 text-blue-300 px-2 py-0.5 rounded-full border border-blue-500/30 font-mono animate-pulse">ATS Verified</span>
+              <span className="text-xs font-bold text-blue-400 tracking-wider uppercase">
+                AI Engine Status
+              </span>
+              <span className="text-[10px] bg-blue-500/20 text-blue-300 px-2 py-0.5 rounded-full border border-blue-500/30 font-mono animate-pulse">
+                ATS Verified
+              </span>
             </div>
             <div className="flex items-baseline gap-1 mb-1.5">
-              <span className="text-2xl font-black text-transparent bg-clip-text bg-gradient-to-r from-white to-blue-200">98%</span>
+              <span className="text-2xl font-black text-transparent bg-clip-text bg-gradient-to-r from-white to-blue-200">
+                98%
+              </span>
               <span className="text-xs text-slate-400">Skor Akurasi ATS</span>
             </div>
             {/* Animated Progress Bar */}
             <div className="w-full bg-slate-800 h-2 rounded-full overflow-hidden p-[1px]">
-              <div 
+              <div
                 className="bg-gradient-to-r from-blue-500 via-indigo-400 to-teal-400 h-full rounded-full transition-all duration-1000 ease-out shadow-[0_0_8px_rgba(59,130,246,0.5)]"
-                style={{ width: '98%' }}
+                style={{ width: "98%" }}
               />
             </div>
             <p className="text-[10px] text-slate-400 mt-2 leading-relaxed">
-              Struktur JSON dioptimalkan otomatis agar ramah mesin seleksi kerja berkemampuan AI.
+              Struktur JSON dioptimalkan otomatis agar ramah mesin seleksi kerja
+              berkemampuan AI.
             </p>
           </div>
 
@@ -312,22 +326,29 @@ export default function Result() {
               AI System Diagnostics
             </div>
             <p className="text-slate-500">[info] Initializing NLP Parser...</p>
-            <p className="text-blue-400">✓ Keywords optimization complete (98%)</p>
-            <p className="text-purple-400">⚡ Layout structured to ISO-A4 standard</p>
-            <p className="text-slate-500 animate-pulse">[waiting] Ready for export trigger...</p>
+            <p className="text-blue-400">
+              ✓ Keywords optimization complete (98%)
+            </p>
+            <p className="text-purple-400">
+              ⚡ Layout structured to ISO-A4 standard
+            </p>
+            <p className="text-slate-500 animate-pulse">
+              [waiting] Ready for export trigger...
+            </p>
           </div>
-
         </div>
 
         {/* Right Panel — CV Preview Container */}
         <div className="flex-1 flex justify-center max-w-full overflow-x-hidden overflow-y-auto">
-          <div id="cv-download-target" className="w-full flex justify-center max-w-full overflow-x-hidden">
+          <div
+            id="cv-download-target"
+            className="w-full flex justify-center max-w-full overflow-x-hidden"
+          >
             <div className="max-w-full overflow-x-auto p-2 flex justify-center">
               <CVPreview data={cvData} template={template} />
             </div>
           </div>
         </div>
-
       </div>
 
       {/* Portfolio Modal */}
@@ -350,7 +371,7 @@ export default function Result() {
                 <span className="text-base shrink-0 mt-0.5">⚠️</span>
                 <div className="space-y-1">
                   <h4 className="text-xs font-bold text-amber-800 uppercase tracking-wide">
-                    Catatan Demo Prototype
+                    Catatan Penting
                   </h4>
                   <p className="text-[11px] text-amber-700 leading-relaxed">
                     Tautan ini berbasis penyimpanan browser lokal Anda. Hasil

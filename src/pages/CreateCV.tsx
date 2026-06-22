@@ -23,6 +23,8 @@ export default function CreateCV() {
 
   // State tambahan untuk animasi tombol AI Polish
   const [polishingExp, setPolishingExp] = useState(false);
+  // State untuk kontrol buka-tutup modal panduan Fresh Graduate
+  const [showFreshGraduateModal, setShowFreshGraduateModal] = useState(false);
 
   // Load draft on mount
   useEffect(() => {
@@ -238,6 +240,74 @@ export default function CreateCV() {
     setPolishingExp(false);
   };
 
+  // Fitur auto-fill cerdas dan dinamis untuk Fresh Graduate / Belum Punya Pengalaman
+  // Fungsi menyuntikkan template berdasarkan kategori pilihan user (Ide Desain Baru)
+  // Fungsi menyuntikkan template berdasarkan kategori pilihan user (VERSI BARU DENGAN UNIVERSAL)
+  const handleSelectTemplate = (
+    category: "umum" | "it" | "admin" | "sales" | "universal"
+  ) => {
+    let companyName = "";
+    let positionName = "";
+    let points = "";
+
+    switch (category) {
+      case "it":
+        companyName = "Proyek Mandiri & Portofolio Kode";
+        positionName = "Independent Software Developer";
+        points =
+          "• Menyusun dan mengembangkan arsitektur aplikasi web fungsional menggunakan teknologi modern.\n• Mengimplementasikan standar clean code serta manajemen repositori berbasis Git.\n• Melakukan proses debugging dan optimasi performa sistem secara berkala.";
+        break;
+      case "admin":
+        companyName = "Tata Kelola Administrasi & Proyek Mandiri";
+        positionName = "Administrative Project Assistant";
+        points =
+          "• Mengelola pengarsipan dokumen digital dan manajemen data operasional secara terstruktur.\n• Mengoptimalisasi efisiensi koordinasi harian guna mendukung produktivitas tim.\n• Menyelesaikan tugas pelaporan berkala dengan tingkat akurasi tinggi.";
+        break;
+      case "sales":
+        companyName = "Pengembangan Bisnis & Portofolio Penjualan";
+        positionName = "Freelance Sales & Marketing Representative";
+        points =
+          "• Menyusun strategi komunikasi persuasif untuk mempromosikan produk/jasa ke target pasar.\n• Melakukan analisis sederhana terkait tren kebutuhan konsumen di lapangan.\n• Berkontribusi dalam mengoptimalkan potensi konversi dan kepuasan pelanggan.";
+        break;
+      case "universal": // 🔍 Kategori baru khusus tombol paling bawah modal
+        companyName = "Proyek Mandiri & Pengalaman Operasional";
+        positionName = "Project Specialist / Pelaksana Operasional";
+        points =
+          "• Mengelola dan memastikan kelancaran alur tugas harian secara disiplin di area proyek mandiri.\n• Menyelesaikan setiap penugasan rutin dengan tingkat ketelitian tinggi sesuai standar yang ditentukan.\n• Berkontribusi aktif dalam menjaga efisiensi kerja serta tanggap menyelesaikan kendala di lapangan.";
+        break;
+      default: // Kategori Umum
+        companyName = "Proyek Mandiri & Pengalaman Operasional";
+        positionName = "Operational Project Assistant";
+        points =
+          "• Mengelola dan memastikan kelancaran alur operasional harian secara disiplin di area kerja.\n• Menyelesaikan setiap penugasan rutin dengan tingkat ketelitian tinggi sesuai standar.\n• Berkontribusi aktif dalam menjaga efisiensi kerja kelompok serta tanggap di lapangan.";
+    }
+
+    updateForm({
+      company: companyName,
+      position: positionName,
+      period: "Terbaru",
+      experiencePoints: points,
+    });
+
+    // LOGIKA PERUBAHAN: Jika universal, langsung tutup modal biar user nyaman!
+    if (category !== "universal") {
+      setShowFreshGraduateModal(false);
+    } else {
+      alert(
+        "✨ Template Universal Berhasil Dimasukkan! Silakan sesuaikan kembali dengan bidang pekerjaanmu."
+      );
+      // Setelah user menekan OK pada alert, modal otomatis ikut menutup
+      setShowFreshGraduateModal(false);
+    }
+
+    // LOGIKA PERUBAHAN: Jika universal, jangan langsung tutup modal biar user bisa baca petunjuk!
+    // if (category !== 'universal') {
+    //   setShowFreshGraduateModal(false);
+    // } else {
+    //   alert("✨ Template Universal Berhasil Dimasukkan! Silakan lihat rumus panduan di bawah untuk menyesuaikan dengan pekerjaanmu.");
+    // }
+  };
+
   // ==========================================================
   // LOGIKA DINAMIS PLACEHOLDER MULTI-JOB (Bukan Cuma Developer)
   // ==========================================================
@@ -350,16 +420,26 @@ export default function CreateCV() {
           phone: form.phone || "+62 812 3456 7890",
           location: form.location || "Jakarta, Indonesia",
           jobTitle: form.jobTitle || "Profesional Berbakat",
-          linkedin: form.linkedin || "", 
+          linkedin: form.linkedin || "",
           summary: `Seorang ${
             form.jobTitle || "Profesional"
           } berdedikasi tinggi dengan latar belakang spesialisasi terukur dari ${
             form.institution || "institusi terkemuka"
           }. Memiliki kompetensi mendalam dalam mengintegrasikan solusi teknis pada aspek: ${
-            form.technicalSkills ? form.technicalSkills.split(',').slice(0, 3).join(', ') : "keahlian industri"
+            form.technicalSkills
+              ? form.technicalSkills.split(",").slice(0, 3).join(", ")
+              : "keahlian industri"
           }, serta rekam jejak profesional yang solid di ${
             form.company || "perusahaan utama"
-          }${form.experiences && form.experiences.length > 0 ? ` dan ${form.experiences.slice(0, 1).map(e => e.company).filter(Boolean).join('')}` : ''}. Berorientasi penuh pada efisiensi performa tinggi dan berkomitmen penuh menghadirkan kontribusi strategis (clean workflow) yang terbukti mengoptimalkan hasil eksekusi operasional tim secara berkelanjutan.`,
+          }${
+            form.experiences && form.experiences.length > 0
+              ? ` dan ${form.experiences
+                  .slice(0, 1)
+                  .map((e) => e.company)
+                  .filter(Boolean)
+                  .join("")}`
+              : ""
+          }. Berorientasi penuh pada efisiensi performa tinggi dan berkomitmen penuh menghadirkan kontribusi strategis (clean workflow) yang terbukti mengoptimalkan hasil eksekusi operasional tim secara berkelanjutan.`,
         },
         education: [
           {
@@ -382,7 +462,7 @@ export default function CreateCV() {
                   "Memimpin pelaksanaan tugas utama dengan peningkatan efisiensi hingga 40%",
                 ],
           },
-          
+
           ...(form.experiences || []).map((exp) => ({
             company: exp.company || "",
             position: exp.position || "",
@@ -644,9 +724,23 @@ export default function CreateCV() {
               {/* Step 2: Pengalaman */}
               {step === 2 && (
                 <div className="space-y-4">
-                  <h2 className="text-base font-bold">
-                    Pengalaman Kerja / Organisasi
-                  </h2>
+                  {/* Bagian Judul yang Diubah agar Berdampingan dengan Tombol */}
+                  <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-2">
+                    <h2 className="text-base font-bold">
+                      Pengalaman Kerja / Organisasi
+                    </h2>
+
+                    {/* TOMBOL PINTAS FRESH GRADUATE */}
+                    <button
+                      type="button"
+                      onClick={() => setShowFreshGraduateModal(true)}
+                      className="text-xs text-blue-400 hover:text-blue-300 bg-blue-500/10 border border-blue-500/20 px-2.5 py-1 rounded-lg font-medium transition-all"
+                    >
+                      💡 Belum punya pengalaman kerja? Klik di sini
+                    </button>
+                  </div>
+
+                  {/* Pembuka Grid Input yang Kamu Maksud - Tetap Pertahankan ke Bawah */}
                   <div className="grid grid-cols-2 gap-3">
                     <div>
                       <label className={labelClass}>
@@ -661,6 +755,7 @@ export default function CreateCV() {
                         }
                       />
                     </div>
+                    {/* Sisa kode input posisi, periode, dll tetap dibiarkan aman di bawahnya */}
                     <div>
                       <label className={labelClass}>Posisi *</label>
                       <input
@@ -1208,6 +1303,178 @@ export default function CreateCV() {
           </div>
         </div>
       </div>
+
+      {/* 🌟 MODAL PANDUAN TEMPLATE FRESH GRADUATE (VERSI JUARA VIBATHON - EDUKASI LENGKAP) */}
+      {showFreshGraduateModal && (
+        <div className="fixed inset-0 bg-black/80 backdrop-blur-sm flex items-center justify-center p-4 z-50 overflow-y-auto">
+          <div className="bg-gray-950 border border-white/10 rounded-2xl max-w-lg w-full p-5 space-y-4 shadow-2xl my-auto max-h-[90vh] overflow-y-auto scrollbar-thin text-left">
+            {/* Header Modal */}
+            <div className="flex justify-between items-start border-b border-white/5 pb-2.5">
+              <div>
+                <h3 className="text-xs font-bold text-white flex items-center gap-1.5">
+                  💡 Panduan Pengalaman Kerja (Fresh Graduate)
+                </h3>
+                <p className="text-[11px] text-gray-400 mt-0.5">
+                  Belum memiliki pengalaman kerja formal? Jangan berkecil hati!
+                  Pilih rumpun template instan atau tulis pengalaman
+                  alternatifmu di bawah ini.
+                </p>
+              </div>
+              <button
+                type="button"
+                onClick={() => setShowFreshGraduateModal(false)}
+                className="text-gray-400 hover:text-white font-bold text-sm p-1 ml-2 transition-colors shrink-0"
+              >
+                ✕
+              </button>
+            </div>
+
+            {/* Bagian 1: Pilihan Rumpun Template Instan */}
+            <div className="space-y-1.5">
+              <div className="text-[10px] font-bold text-gray-500 uppercase tracking-wider">
+                A. Pilih Rumpun Kerja yang Mirip (Otomatis)
+              </div>
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
+                <button
+                  type="button"
+                  onClick={() => handleSelectTemplate("umum")}
+                  className="text-left p-2.5 bg-gray-900 hover:bg-gray-800/80 border border-gray-800 hover:border-gray-700 rounded-xl transition-all group"
+                >
+                  <div className="font-bold text-[11px] text-blue-400 group-hover:text-blue-300">
+                    📦 Umum & Operasional
+                  </div>
+                  <div className="text-[10px] text-gray-400 mt-0.5 leading-relaxed">
+                    Office boy, kru toko, driver, security, dll.
+                  </div>
+                </button>
+
+                <button
+                  type="button"
+                  onClick={() => handleSelectTemplate("it")}
+                  className="text-left p-2.5 bg-gray-900 hover:bg-gray-800/80 border border-gray-800 hover:border-gray-700 rounded-xl transition-all group"
+                >
+                  <div className="font-bold text-[11px] text-purple-400 group-hover:text-purple-300">
+                    💻 Teknologi & Digital
+                  </div>
+                  <div className="text-[10px] text-gray-400 mt-0.5 leading-relaxed">
+                    Software dev, IT support, data entry, desainer.
+                  </div>
+                </button>
+
+                <button
+                  type="button"
+                  onClick={() => handleSelectTemplate("admin")}
+                  className="text-left p-2.5 bg-gray-900 hover:bg-gray-800/80 border border-gray-800 hover:border-gray-700 rounded-xl transition-all group"
+                >
+                  <div className="font-bold text-[11px] text-emerald-400 group-hover:text-emerald-300">
+                    📁 Admin & Keuangan
+                  </div>
+                  <div className="text-[10px] text-gray-400 mt-0.5 leading-relaxed">
+                    Sekretaris, admin medsos, kasir, logistik.
+                  </div>
+                </button>
+
+                <button
+                  type="button"
+                  onClick={() => handleSelectTemplate("sales")}
+                  className="text-left p-2.5 bg-gray-900 hover:bg-gray-800/80 border border-gray-800 hover:border-gray-700 rounded-xl transition-all group"
+                >
+                  <div className="font-bold text-[11px] text-amber-400 group-hover:text-amber-300">
+                    🤝 Sales & Service
+                  </div>
+                  <div className="text-[10px] text-gray-400 mt-0.5 leading-relaxed">
+                    Sales lapangan, customer service, marketing.
+                  </div>
+                </button>
+              </div>
+            </div>
+
+            {/* Bagian 2: Tombol Panduan Universal */}
+            <div>
+              <button
+                type="button"
+                onClick={() => handleSelectTemplate("universal")}
+                className="w-full text-center py-2 px-3 bg-blue-500/10 hover:bg-blue-500/20 border border-blue-500/20 text-blue-400 rounded-xl font-medium text-[11px] transition-all"
+              >
+                🔍 Pekerjaan saya tidak ada di atas? (Klik untuk Panduan
+                Universal)
+              </button>
+            </div>
+
+            {/* 🌟 BAGIAN 3: IDE JURUS BARU KAMU - INSPIRASI PENGALAMAN ALTERNATIF */}
+            <div className="bg-gray-900/40 border border-white/5 rounded-xl p-3 space-y-2">
+              <div className="text-[10px] font-bold text-amber-400 uppercase tracking-wider flex items-center gap-1">
+                💡 Kamu Punya Pengalaman Ini? Tulis Saja!
+              </div>
+              <p className="text-[11px] text-gray-400 leading-relaxed">
+                HRD tidak melulu mencari riwayat kerja kantoran. Kamu bisa
+                mengetik pengalaman berharga berikut secara mandiri di formulir:
+              </p>
+
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 text-[10px] leading-relaxed">
+                <div className="bg-black/30 p-2 rounded-lg border border-white/5">
+                  <span className="font-bold text-blue-400 block">
+                    ✨ Proyek Mandiri / Portofolio
+                  </span>
+                  Ngetik proyek coding sendiri, eksperimen meracik menu kopi,
+                  atau mengelola operasional tertentu secara independen.
+                </div>
+                <div className="bg-black/30 p-2 rounded-lg border border-white/5">
+                  <span className="font-bold text-purple-400 block">
+                    👥 Organisasi / Kepanitiaan
+                  </span>
+                  Pengalaman aktif pengurus OSIS, kepengurusan UKM kampus, atau
+                  panitia aktif acara 17-an / Karang Taruna.
+                </div>
+                <div className="bg-black/30 p-2 rounded-lg border border-white/5">
+                  <span className="font-bold text-emerald-400 block">
+                    💼 Magang (Internship) / PKL
+                  </span>
+                  Praktik Kerja Lapangan dari sekolah/kampus. Bagian ini
+                  memiliki nilai jual yang sangat tinggi di mata recruiter!
+                </div>
+                <div className="bg-black/30 p-2 rounded-lg border border-white/5">
+                  <span className="font-bold text-amber-400 block">
+                    🛠️ Freelance / Usaha Keluarga
+                  </span>
+                  Bekerja lepas menerima jasa tertentu harian, atau membantu
+                  menjaga pembukuan & operasional toko milik orang tua.
+                </div>
+              </div>
+            </div>
+
+            {/* Bagian 4: Rumus Kalimat ATS */}
+            <div className="bg-gray-900/70 border border-white/5 rounded-xl p-3 space-y-1.5">
+              <div className="text-[10px] font-bold text-gray-400 uppercase tracking-wider">
+                📝 Rumus Kalimat Deskripsi (ATS-Friendly)
+              </div>
+              <div className="bg-black/40 p-2.5 rounded-lg border border-white/5 space-y-1 font-mono text-[9px] text-gray-300 overflow-x-auto">
+                <div>
+                  <span className="text-blue-400">Tugas:</span>{" "}
+                  <span className="italic">
+                    "Mengelola dan merancang [Nama Proyek/Tugas] secara
+                    mandiri..."
+                  </span>
+                </div>
+                <div>
+                  <span className="text-emerald-400">Prosedur:</span>{" "}
+                  <span className="italic">
+                    "Menyelesaikan target harian dengan ketelitian tinggi sesuai
+                    standar..."
+                  </span>
+                </div>
+                <div>
+                  <span className="text-purple-400">Karakter:</span>{" "}
+                  <span className="italic">
+                    "Aktif berkolaborasi dalam kelompok dan tanggap
+                    menyelesaikan kendala..."
+                  </span>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }
