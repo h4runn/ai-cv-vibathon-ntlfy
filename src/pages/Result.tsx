@@ -56,34 +56,28 @@ export default function Result() {
 
   // 2. PERBAIKAN UTAMA: Sistem download otomatis premium presisi A4
   const handleDownloadPDF = () => {
-    const element = document.querySelector("#cv-download-target > div");
+  const element = document.getElementById("cv-content");
+  if (!element) return;
 
-    if (!element) {
-      alert("Elemen pratinjau CV tidak ditemukan!");
-      return;
-    }
-
-    const options = {
-      margin: 0,
-      filename: `CV_${cvData?.profile?.name || "Pengguna"}.pdf`,
-      image: { type: "jpeg", quality: 0.98 },
-      html2canvas: {
-        scale: 3, // Naikkan ke 3 agar text super tajam saat di-zoom oleh juri
-        useCORS: true,
-        logging: false,
-        scrollX: 0,
-        scrollY: 0,
-        windowWidth: 794, 
-      },
-      jsPDF: { unit: "mm", format: "a4", orientation: "portrait" },
-      pagebreak: { mode: ["css", "legacy"] },
-    };
-
-    setTimeout(() => {
-      // @ts-ignore
-      html2pdf().set(options).from(element).save();
-    }, 200);
+  const options = {
+    margin: 0,
+    filename: `CV_${cvData?.profile?.name || "Pengguna"}.pdf`,
+    image: { type: "jpeg", quality: 0.98 },
+    html2canvas: {
+      scale: 2,
+      useCORS: true,
+      logging: false,
+      width: 794,
+      windowWidth: 794,
+    },
+    jsPDF: { unit: "px", format: [794, 1123], orientation: "portrait" },
   };
+
+  setTimeout(() => {
+    // @ts-ignore
+    html2pdf().set(options).from(element).save();
+  }, 300);
+};;
 
   const generateSlug = (name: string) => {
     return name

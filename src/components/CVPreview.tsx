@@ -57,73 +57,77 @@ export default function CVPreview({ data, template }: CVPreviewProps) {
   };
 
   return (
+  <div
+    id="cv-content"
+    className="bg-white shadow-xl"
+    style={{
+      width: "794px",
+      minHeight: "1123px",
+      position: "relative",
+      fontFamily: "'Inter', system-ui, sans-serif",
+      fontSize: "11px",
+      lineHeight: "1.5",
+      color: "#1F2937",
+      display: "flex",
+      flexDirection: "column",
+    }}
+  >
+    {/* Header */}
     <div
-      id="cv-content"
-      className="bg-white shadow-xl"
       style={{
-        width: "210mm",
-        minHeight: "auto",
-        position: "relative",
-        fontFamily: "'Inter', system-ui, sans-serif",
-        fontSize: "11px",
-        lineHeight: "1.5",
-        color: "#1F2937",
+        backgroundColor: c.primary,
+        color: "white",
+        padding: "28px 32px",
+        flexShrink: 0,
       }}
     >
-      {/* Header */}
-      <div
+      <h1
         style={{
-          backgroundColor: c.primary,
-          color: "white",
-          padding: "28px 32px",
+          fontSize: "26px",
+          fontWeight: 800,
+          margin: 0,
+          letterSpacing: "-0.5px",
         }}
       >
-        <h1
-          style={{
-            fontSize: "26px",
-            fontWeight: 800,
-            margin: 0,
-            letterSpacing: "-0.5px",
-          }}
-        >
-          {profile.name}
-        </h1>
-        <p
-          style={{
-            fontSize: "14px",
-            opacity: 0.9,
-            marginTop: "4px",
-            fontWeight: 500,
-          }}
-        >
-          {profile.jobTitle}
-        </p>
-        <div
-          style={{
-            display: "flex",
-            gap: "20px",
-            marginTop: "12px",
-            fontSize: "11px",
-            opacity: 0.85,
-            flexWrap: "wrap",
-          }}
-        >
-          {profile.email && <span>✉ {profile.email}</span>}
-          {profile.phone && <span>📞 {profile.phone}</span>}
-          {profile.location && <span>📍 {profile.location}</span>}
-        </div>
+        {profile.name}
+      </h1>
+      <p
+        style={{
+          fontSize: "14px",
+          opacity: 0.9,
+          marginTop: "4px",
+          fontWeight: 500,
+        }}
+      >
+        {profile.jobTitle}
+      </p>
+      <div
+        style={{
+          display: "flex",
+          gap: "20px",
+          marginTop: "12px",
+          fontSize: "11px",
+          opacity: 0.85,
+          flexWrap: "wrap",
+        }}
+      >
+        {profile.email && <span>✉ {profile.email}</span>}
+        {profile.phone && <span>📞 {profile.phone}</span>}
+        {profile.location && <span>📍 {profile.location}</span>}
+        {profile.linkedin && <span>🔗 {profile.linkedin}</span>}
       </div>
+    </div>
 
-      {/* Body — 2 columns */}
-      <div style={{ display: "flex", gap: 0 }}>
-        {/* Left column */}
-        <div
-          style={{
-            flex: 2,
-            padding: "24px 28px",
-            borderRight: `1px solid ${c.border}`,
-          }}
-        >
+    {/* Body — 2 columns */}
+<div style={{ display: "flex", flex: 1 }}>
+  {/* Left column */}
+  <div
+    style={{
+      flex: 2,
+      padding: "24px 28px",
+      borderRight: `1px solid ${c.border}`,
+    }}
+      >
           {/* Summary */}
           {profile.summary && (
             <section style={{ marginBottom: "24px" }}>
@@ -283,65 +287,36 @@ export default function CVPreview({ data, template }: CVPreviewProps) {
         <div
           style={{ flex: 1, padding: "24px 20px", backgroundColor: c.light }}
         >
-          {/* UPGRADED: Label Technical Skills sekarang memanggil fungsi getSkillLabel */}
-          {skills?.technical?.length > 0 && (
-            <section style={{ marginBottom: "20px" }}>
-              <SectionTitle color={c.primary} small>
-                {getSkillLabel(profile.jobTitle)}
-              </SectionTitle>
-              <div style={{ display: "flex", flexWrap: "wrap", gap: "6px" }}>
-                {skills.technical.map((s, i) => (
-                  <span
-                    key={i}
-                    style={{
-                      backgroundColor: "white",
-                      border: `1px solid ${c.border}`,
-                      color: c.text,
-                      borderRadius: "20px",
-                      padding: "3px 10px",
-                      fontSize: "10px",
-                      fontWeight: 500,
-                      whiteSpace: "nowrap",
-                      display: "inline-block",
-                      lineHeight: "1.4",
-                    }}
-                  >
-                    {s}
-                  </span>
-                ))}
-              </div>
-            </section>
-          )}
+         {skills?.technical?.length > 0 && (
+  <section style={{ marginBottom: "20px" }}>
+    <SectionTitle color={c.primary} small>
+      {getSkillLabel(profile.jobTitle)}
+    </SectionTitle>
+    <div style={{ display: "flex", flexDirection: "column", gap: "4px" }}>
+  {skills.technical.map((s, i) => (
+    <span key={i} style={{ fontSize: "10.5px", color: c.text }}>
+      • {s}
+    </span>
+  ))}
+</div>
+  </section>
+)}
 
-          {/* Soft Skills */}
-          {skills?.soft?.length > 0 && (
-            <section style={{ marginBottom: "20px" }}>
-              <SectionTitle color={c.primary} small>
-                Soft Skills
-              </SectionTitle>
-              <div style={{ display: "flex", flexWrap: "wrap", gap: "6px" }}>
-                {skills.soft.map((s, i) => (
-                  <span
-                    key={i}
-                    style={{
-                      backgroundColor: "white",
-                      border: "1px solid #D1FAE5",
-                      color: "#059669",
-                      borderRadius: "20px",
-                      padding: "3px 10px",
-                      fontSize: "10px",
-                      fontWeight: 500,
-                      whiteSpace: "nowrap",
-                      display: "inline-block",
-                      lineHeight: "1.4",
-                    }}
-                  >
-                    {s}
-                  </span>
-                ))}
-              </div>
-            </section>
-          )}
+{/* Soft Skills — TAMBAH INI KEMBALI */}
+{skills?.soft?.length > 0 && (
+  <section style={{ marginBottom: "20px" }}>
+    <SectionTitle color={c.primary} small>
+      Soft Skills
+    </SectionTitle>
+    <div style={{ display: "flex", flexDirection: "column", gap: "4px" }}>
+  {skills.soft.map((s, i) => (
+    <span key={i} style={{ fontSize: "10.5px", color: "#059669" }}>
+      • {s}
+    </span>
+  ))}
+</div>
+  </section>
+)}
 
           {/* Languages */}
           {languages?.length > 0 && (

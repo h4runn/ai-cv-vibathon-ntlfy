@@ -350,13 +350,16 @@ export default function CreateCV() {
           phone: form.phone || "+62 812 3456 7890",
           location: form.location || "Jakarta, Indonesia",
           jobTitle: form.jobTitle || "Profesional Berbakat",
+          linkedin: form.linkedin || "", 
           summary: `Seorang ${
             form.jobTitle || "Profesional"
-          } berbakat yang berfokus pada efisiensi kerja tinggi. Memiliki latar belakang pendidikan yang kuat dari ${
+          } berdedikasi tinggi dengan latar belakang spesialisasi terukur dari ${
             form.institution || "institusi terkemuka"
-          } dan rekam jejak yang solid di ${
-            form.company || "industri terkait"
-          }. Sangat termotivasi untuk memberikan kontribusi nyata bagi perkembangan tim.`,
+          }. Memiliki kompetensi mendalam dalam mengintegrasikan solusi teknis pada aspek: ${
+            form.technicalSkills ? form.technicalSkills.split(',').slice(0, 3).join(', ') : "keahlian industri"
+          }, serta rekam jejak profesional yang solid di ${
+            form.company || "perusahaan utama"
+          }${form.experiences && form.experiences.length > 0 ? ` dan ${form.experiences.slice(0, 1).map(e => e.company).filter(Boolean).join('')}` : ''}. Berorientasi penuh pada efisiensi performa tinggi dan berkomitmen penuh menghadirkan kontribusi strategis (clean workflow) yang terbukti mengoptimalkan hasil eksekusi operasional tim secara berkelanjutan.`,
         },
         education: [
           {
@@ -377,10 +380,17 @@ export default function CreateCV() {
               ? form.experiencePoints.split("\n").filter((p) => p.trim() !== "")
               : [
                   "Memimpin pelaksanaan tugas utama dengan peningkatan efisiensi hingga 40%",
-                  "Berkolaborasi dengan tim lintas divisi untuk menyelaraskan target operasional",
-                  "Mengoptimalkan alur kerja harian dan memastikan produktivitas kerja yang maksimal",
                 ],
           },
+          
+          ...(form.experiences || []).map((exp) => ({
+            company: exp.company || "",
+            position: exp.position || "",
+            period: exp.period || "",
+            points: exp.points
+              ? exp.points.split("\n").filter((p) => p.trim() !== "")
+              : [],
+          })),
         ],
         skills: {
           technical: form.technicalSkills

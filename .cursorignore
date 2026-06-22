@@ -1,0 +1,20 @@
+# Abaikan folder library & build
+node_modules/
+.git/
+.next/
+.vercel/
+dist/
+build/
+out/
+
+# Abaikan file log & cache
+*.log
+.eslintcache
+.cache/
+
+# Abaikan file dokumen besar/gambar yang tidak ada kodenya
+*.pdf
+*.png
+*.jpg
+*.jpeg
+*.svg
