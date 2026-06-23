@@ -228,13 +228,13 @@ export default function LandingPage() {
             </p>
           </div>
 
-                    {/* Tab buttons - Fixed for Mobile (Horizontal Scroll) */}
+          {/* Tab buttons - Fixed for Mobile + Icon Size */}
           <div className="flex overflow-x-auto pb-4 -mx-6 px-6 gap-3 mb-8 snap-x snap-mandatory scrollbar-hide">
             {TABS.map((tab) => (
               <button
                 key={tab.id}
                 onClick={() => setActiveTab(tab.id)}
-                className={`flex items-center gap-2 px-4 py-2.5 rounded-xl font-medium text-sm transition-all ${
+                className={`flex items-center gap-2 px-4 py-2.5 rounded-xl font-medium text-sm transition-all whitespace-nowrap ${
                   activeTab === tab.id
                     ? "bg-violet-600 text-white shadow-lg shadow-violet-500/30"
                     : "bg-white/5 text-white/70 hover:bg-white/10 hover:text-white border border-white/10"
@@ -242,7 +242,7 @@ export default function LandingPage() {
               >
                 {tab.id === "ai" && (
                   <svg
-                    className="w-4 h-4"
+                    className="w-5 h-5"
                     fill="none"
                     viewBox="0 0 24 24"
                     stroke="currentColor"
@@ -257,7 +257,7 @@ export default function LandingPage() {
                 )}
                 {tab.id === "ats" && (
                   <svg
-                    className="w-4 h-4"
+                    className="w-5 h-5"
                     fill="none"
                     viewBox="0 0 24 24"
                     stroke="currentColor"
@@ -272,7 +272,7 @@ export default function LandingPage() {
                 )}
                 {tab.id === "template" && (
                   <svg
-                    className="w-4 h-4"
+                    className="w-5 h-5"
                     fill="none"
                     viewBox="0 0 24 24"
                     stroke="currentColor"
@@ -287,7 +287,7 @@ export default function LandingPage() {
                 )}
                 {tab.id === "proses" && (
                   <svg
-                    className="w-4 h-4"
+                    className="w-5 h-5"
                     fill="none"
                     viewBox="0 0 24 24"
                     stroke="currentColor"
