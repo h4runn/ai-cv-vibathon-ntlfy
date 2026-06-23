@@ -228,8 +228,8 @@ export default function LandingPage() {
             </p>
           </div>
 
-          {/* Tab buttons dengan Render SVG Minimalis menggantikan emoji */}
-          <div className="flex flex-wrap justify-center gap-2 mb-8">
+                    {/* Tab buttons - Fixed for Mobile (Horizontal Scroll) */}
+          <div className="flex overflow-x-auto pb-4 -mx-6 px-6 gap-3 mb-8 snap-x snap-mandatory scrollbar-hide">
             {TABS.map((tab) => (
               <button
                 key={tab.id}
