@@ -406,6 +406,22 @@ export default function CreateCV() {
 
   const placeholders = getDynamicPlaceholders(form.jobTitle);
 
+  const getSummary = (form: CVFormData) => {
+  const job = form.jobTitle || "profesional";
+  const inst = form.institution || "institusi terkemuka";
+  const comp = form.company || "perusahaan terkait";
+  const skill = form.technicalSkills ? form.technicalSkills.split(',').slice(0, 3).join(', ') : "keahlian industri";
+
+  const templates = [
+    `Seorang ${job} berorientasi hasil dengan latar belakang pendidikan di ${inst}. Memiliki keahlian teknis dalam ${skill} dan pengalaman praktis di ${comp}. Berkomitmen tinggi untuk memberikan solusi efisien melalui alur kerja yang rapi dan terukur.`,
+    `Profesional muda sebagai ${job} yang berfokus pada pengembangan sistem berkualitas. Lulusan ${inst} dengan kompetensi utama pada ${skill}. Memiliki rekam jejak kolaborasi yang solid di ${comp}, selalu antusias dalam menghadapi tantangan baru untuk mengoptimalkan performa tim.`,
+    `Sebagai ${job} yang berbasis di ${form.location || "Indonesia"}, saya memiliki spesialisasi dalam ${skill}. Pengalaman saya di ${comp} telah membentuk pola kerja yang presisi dan sistematis. Lulusan ${inst} yang siap memberikan kontribusi strategis dan inovasi berkelanjutan bagi organisasi Anda.`,
+    `Berdedikasi sebagai ${job} dengan dasar kuat dalam ${skill}. Pengalaman kerja di ${comp} mengajarkan saya pentingnya efisiensi dan adaptabilitas. Lulusan ${inst} ini siap menerapkan keahlian teknis untuk mendukung pertumbuhan perusahaan.`
+  ];
+
+  return templates[Math.floor(Math.random() * templates.length)];
+};
+
   const handleGenerate = async () => {
     setLoading(true);
     setError("");
@@ -421,25 +437,7 @@ export default function CreateCV() {
           location: form.location || "Jakarta, Indonesia",
           jobTitle: form.jobTitle || "Profesional Berbakat",
           linkedin: form.linkedin || "",
-          summary: `Seorang ${
-            form.jobTitle || "Profesional"
-          } berdedikasi tinggi dengan latar belakang spesialisasi terukur dari ${
-            form.institution || "institusi terkemuka"
-          }. Memiliki kompetensi mendalam dalam mengintegrasikan solusi teknis pada aspek: ${
-            form.technicalSkills
-              ? form.technicalSkills.split(",").slice(0, 3).join(", ")
-              : "keahlian industri"
-          }, serta rekam jejak profesional yang solid di ${
-            form.company || "perusahaan utama"
-          }${
-            form.experiences && form.experiences.length > 0
-              ? ` dan ${form.experiences
-                  .slice(0, 1)
-                  .map((e) => e.company)
-                  .filter(Boolean)
-                  .join("")}`
-              : ""
-          }. Berorientasi penuh pada efisiensi performa tinggi dan berkomitmen penuh menghadirkan kontribusi strategis (clean workflow) yang terbukti mengoptimalkan hasil eksekusi operasional tim secara berkelanjutan.`,
+          summary: getSummary(form),
         },
         education: [
           {

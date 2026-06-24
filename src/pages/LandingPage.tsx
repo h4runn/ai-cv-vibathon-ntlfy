@@ -1,7 +1,7 @@
 import { useState, useEffect, useRef } from "react";
 import { Link } from "react-router-dom";
+import { Moon, Sun } from "lucide-react";
 
-// Mengubah struktur TABS agar merender ID, icon akan ditentukan dinamis via SVG di bawah
 const TABS = [
   { id: "ai", label: "AI yang Menulis" },
   { id: "ats", label: "Format ATS-Friendly" },
@@ -12,7 +12,18 @@ const TABS = [
 export default function LandingPage() {
   const [activeTab, setActiveTab] = useState("ai");
   const [sectionVisible, setSectionVisible] = useState(false);
+  const [isDark, setIsDark] = useState(true);
   const sectionRef = useRef<HTMLElement>(null);
+
+  useEffect(() => {
+    const saved = localStorage.getItem("theme-mode");
+    if (saved) setIsDark(saved === "dark");
+  }, []);
+
+  useEffect(() => {
+    localStorage.setItem("theme-mode", isDark ? "dark" : "light");
+    document.documentElement.classList.toggle("dark", isDark);
+  }, [isDark]);
 
   useEffect(() => {
     const observer = new IntersectionObserver(
@@ -30,40 +41,25 @@ export default function LandingPage() {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-900 via-blue-950 to-indigo-900">
+    <div className={`min-h-screen transition-colors duration-300 ${
+      isDark
+        ? "bg-gradient-to-br from-slate-950 via-slate-900 to-slate-900"
+        : "bg-gradient-to-br from-slate-50 via-white to-slate-50"
+    }`}>
       {/* Navbar */}
-      <nav className="flex items-center justify-between px-6 py-5 max-w-6xl mx-auto">
-        <div className="flex items-center gap-2">
-          {/* Mengganti 📄 dengan SVG Dokumen Minimalis */}
-          <svg
-            className="w-5 h-5 text-blue-400"
-            fill="none"
-            viewBox="0 0 24 24"
-            stroke="currentColor"
-            strokeWidth={2.5}
-          >
-            <path
-              strokeLinecap="round"
-              strokeLinejoin="round"
-              d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"
-            />
-          </svg>
-          <span className="text-white font-bold text-xl tracking-wide">
-            CVCraft AI
-          </span>
-        </div>
-        <div className="flex items-center gap-3">
-          <Link
-            to="/dashboard"
-            className="flex items-center gap-1.5 px-4 py-2 text-white/80 hover:text-white font-medium text-sm transition-colors"
-          >
-            {/* Mengganti 📄 dengan SVG Dokumen Kecil */}
+      <nav className={`sticky top-0 z-50 backdrop-blur-md transition-colors duration-300 ${
+        isDark 
+          ? "bg-slate-900/80 border-b border-slate-800/50" 
+          : "bg-white/80 border-b border-slate-200/50"
+      }`}>
+        <div className="flex items-center justify-between px-6 py-4 max-w-6xl mx-auto">
+          <div className="flex items-center gap-2">
             <svg
-              className="w-4 h-4 text-white/60"
+              className={`w-5 h-5 ${isDark ? "text-purple-400" : "text-purple-600"}`}
               fill="none"
               viewBox="0 0 24 24"
               stroke="currentColor"
-              strokeWidth={2}
+              strokeWidth={2.5}
             >
               <path
                 strokeLinecap="round"
@@ -71,23 +67,68 @@ export default function LandingPage() {
                 d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"
               />
             </svg>
-            CV Saya
-          </Link>
-          <Link
-            to="/create"
-            className="px-5 py-2.5 bg-white/10 hover:bg-white/20 text-white rounded-xl font-medium text-sm transition-all border border-white/20"
-          >
-            Buat CV
-          </Link>
+            <span className={`font-bold text-xl tracking-wide ${isDark ? "text-white" : "text-slate-900"}`}>
+              CVCraft AI
+            </span>
+          </div>
+          <div className="flex items-center gap-4">
+            <button
+              onClick={() => setIsDark(!isDark)}
+              className={`p-2.5 rounded-lg transition-all ${
+                isDark
+                  ? "bg-slate-800 hover:bg-slate-700 text-yellow-400"
+                  : "bg-slate-200 hover:bg-slate-300 text-slate-700"
+              }`}
+              aria-label="Toggle theme"
+            >
+              {isDark ? <Sun size={20} /> : <Moon size={20} />}
+            </button>
+            <Link
+              to="/dashboard"
+              className={`flex items-center gap-1.5 px-4 py-2 font-medium text-sm transition-colors ${
+                isDark
+                  ? "text-slate-300 hover:text-white"
+                  : "text-slate-600 hover:text-slate-900"
+              }`}
+            >
+              <svg
+                className="w-4 h-4"
+                fill="none"
+                viewBox="0 0 24 24"
+                stroke="currentColor"
+                strokeWidth={2}
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"
+                />
+              </svg>
+              CV Saya
+            </Link>
+            <Link
+              to="/create"
+              className={`px-5 py-2.5 rounded-xl font-medium text-sm transition-all border ${
+                isDark
+                  ? "bg-purple-600 hover:bg-purple-700 text-white border-purple-500"
+                  : "bg-purple-600 hover:bg-purple-700 text-white border-purple-500"
+              }`}
+            >
+              Buat CV
+            </Link>
+          </div>
         </div>
       </nav>
 
       {/* Hero */}
-      <div className="max-w-6xl mx-auto px-6 pt-20 pb-24 text-center">
-        <div className="inline-flex items-center gap-2 bg-blue-500/20 text-blue-300 px-4 py-2 rounded-full text-sm font-medium border border-blue-500/30 mb-8">
-          {/* Mengganti ✨ dengan SVG Sparkles yang Elegan */}
+      <div className="max-w-6xl mx-auto px-6 pt-28 pb-24 text-center">
+        <div className={`inline-flex items-center gap-2 px-4 py-2 rounded-full text-sm font-medium border mb-8 ${
+          isDark
+            ? "bg-purple-500/15 text-purple-300 border-purple-500/30"
+            : "bg-purple-100 text-purple-700 border-purple-300/50"
+        }`}>
           <svg
-            className="w-4 h-4 text-blue-300 animate-pulse"
+            className={`w-4 h-4 animate-pulse ${isDark ? "text-purple-300" : "text-purple-600"}`}
             fill="none"
             viewBox="0 0 24 24"
             stroke="currentColor"
@@ -102,34 +143,44 @@ export default function LandingPage() {
           <span>Harun Vibathon 2026 · Powered by Claude AI</span>
         </div>
 
-        <h1 className="text-5xl md:text-7xl font-extrabold text-white mb-6 leading-tight">
+        <h1 className={`text-5xl md:text-7xl font-extrabold mb-6 leading-tight ${isDark ? "text-white" : "text-slate-900"}`}>
           CV Profesional dalam{" "}
-          <span className="text-transparent bg-clip-text bg-gradient-to-r from-blue-400 to-violet-400">
+          <span className="text-transparent bg-clip-text bg-gradient-to-r from-purple-400 to-pink-400">
             Hitungan Detik
           </span>
         </h1>
 
-        <p className="text-xl text-blue-100/80 mb-10 max-w-2xl mx-auto leading-relaxed">
-          Buat CV yang ATS-friendly dan portofolio online impresif dengan
-          bantuan AI. Gratis, tanpa perlu daftar akun atau input API key apapun.
+        <p className={`text-xl mb-10 max-w-2xl mx-auto leading-relaxed ${
+          isDark ? "text-slate-300" : "text-slate-600"
+        }`}>
+          Buat CV yang ATS-friendly dan portofolio online impresif dengan bantuan AI. 
+          Langsung pakai tanpa perlu daftar akun atau input API key.
         </p>
 
         <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
           <Link
             to="/create"
-            className="px-8 py-4 bg-blue-500 hover:bg-blue-600 text-white font-bold rounded-2xl text-lg transition-all shadow-lg shadow-blue-500/30 hover:-translate-y-1"
+            className={`px-8 py-4 font-bold rounded-2xl text-lg transition-all shadow-lg hover:-translate-y-1 ${
+              isDark
+                ? "bg-purple-600 hover:bg-purple-700 text-white shadow-purple-500/30"
+                : "bg-purple-600 hover:bg-purple-700 text-white shadow-purple-500/30"
+            }`}
           >
-            Buat CV Sekarang — Gratis!
+            Buat CV Sekarang!
           </Link>
           <button
             onClick={scrollToPelajari}
-            className="px-8 py-4 bg-white/10 hover:bg-white/20 text-white font-semibold rounded-2xl text-lg transition-all border border-white/20"
+            className={`px-8 py-4 font-semibold rounded-2xl text-lg transition-all border ${
+              isDark
+                ? "bg-slate-800/50 hover:bg-slate-700/50 text-white border-slate-700"
+                : "bg-slate-100 hover:bg-slate-200 text-slate-900 border-slate-300"
+            }`}
           >
             Pelajari Lebih Lanjut ↓
           </button>
         </div>
 
-        {/* Feature cards (Mengganti emoji dengan SVG Kustom murni) */}
+        {/* Feature cards */}
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mt-24 text-left">
           {[
             {
@@ -150,12 +201,16 @@ export default function LandingPage() {
           ].map((f) => (
             <div
               key={f.id}
-              className="bg-white/10 backdrop-blur rounded-2xl p-6 border border-white/10"
+              className={`backdrop-blur rounded-2xl p-6 border transition-all ${
+                isDark
+                  ? "bg-slate-800/50 border-slate-700 hover:border-purple-500/50 hover:bg-slate-800/80"
+                  : "bg-white/70 border-slate-200 hover:border-purple-300/50 hover:bg-white"
+              }`}
             >
-              <div className="text-blue-400 mb-4">
+              <div className={`inline-block p-3 rounded-lg mb-4 ${isDark ? "bg-purple-500/20" : "bg-purple-100"}`}>
                 {f.id === "ai" && (
                   <svg
-                    className="w-8 h-8"
+                    className={`w-8 h-8 ${isDark ? "text-purple-400" : "text-purple-600"}`}
                     fill="none"
                     viewBox="0 0 24 24"
                     stroke="currentColor"
@@ -170,7 +225,7 @@ export default function LandingPage() {
                 )}
                 {f.id === "web" && (
                   <svg
-                    className="w-8 h-8"
+                    className={`w-8 h-8 ${isDark ? "text-purple-400" : "text-purple-600"}`}
                     fill="none"
                     viewBox="0 0 24 24"
                     stroke="currentColor"
@@ -185,7 +240,7 @@ export default function LandingPage() {
                 )}
                 {f.id === "doc" && (
                   <svg
-                    className="w-8 h-8"
+                    className={`w-8 h-8 ${isDark ? "text-purple-400" : "text-purple-600"}`}
                     fill="none"
                     viewBox="0 0 24 24"
                     stroke="currentColor"
@@ -199,8 +254,8 @@ export default function LandingPage() {
                   </svg>
                 )}
               </div>
-              <h3 className="text-white font-bold text-lg mb-2">{f.title}</h3>
-              <p className="text-blue-200/70 text-sm leading-relaxed">
+              <h3 className={`font-bold text-lg mb-2 ${isDark ? "text-white" : "text-slate-900"}`}>{f.title}</h3>
+              <p className={`text-sm leading-relaxed ${isDark ? "text-slate-300" : "text-slate-600"}`}>
                 {f.desc}
               </p>
             </div>
@@ -212,7 +267,11 @@ export default function LandingPage() {
       <section
         id="pelajari"
         ref={sectionRef}
-        className={`bg-slate-900/80 border-t border-white/10 py-20 px-6 transition-all duration-700 ${
+        className={`border-t transition-all duration-700 py-20 px-6 ${
+          isDark
+            ? "bg-slate-900/40 border-slate-800/50"
+            : "bg-slate-100/40 border-slate-200/50"
+        } ${
           sectionVisible
             ? "opacity-100 translate-y-0"
             : "opacity-0 translate-y-8"
@@ -220,15 +279,15 @@ export default function LandingPage() {
       >
         <div className="max-w-4xl mx-auto">
           <div className="text-center mb-12">
-            <h2 className="text-3xl md:text-4xl font-extrabold text-white mb-3">
+            <h2 className={`text-3xl md:text-4xl font-extrabold mb-3 ${isDark ? "text-white" : "text-slate-900"}`}>
               Bagaimana CV Craft AI Bekerja?
             </h2>
-            <p className="text-blue-200/70 text-lg">
+            <p className={`text-lg ${isDark ? "text-slate-300" : "text-slate-600"}`}>
               Teknologi AI terdepan yang menulis CV terbaik untukmu
             </p>
           </div>
 
-          {/* Tab buttons - Fixed for Mobile + Icon Size */}
+          {/* Tab buttons */}
           <div className="flex overflow-x-auto pb-4 -mx-6 px-6 gap-3 mb-8 snap-x snap-mandatory scrollbar-hide">
             {TABS.map((tab) => (
               <button
@@ -236,8 +295,12 @@ export default function LandingPage() {
                 onClick={() => setActiveTab(tab.id)}
                 className={`flex items-center gap-2 px-4 py-2.5 rounded-xl font-medium text-sm transition-all whitespace-nowrap ${
                   activeTab === tab.id
-                    ? "bg-violet-600 text-white shadow-lg shadow-violet-500/30"
-                    : "bg-white/5 text-white/70 hover:bg-white/10 hover:text-white border border-white/10"
+                    ? isDark
+                      ? "bg-purple-600 text-white shadow-lg shadow-purple-500/30"
+                      : "bg-purple-600 text-white shadow-lg shadow-purple-500/30"
+                    : isDark
+                      ? "bg-slate-800/50 text-slate-300 hover:bg-slate-700 hover:text-white border border-slate-700"
+                      : "bg-slate-200 text-slate-600 hover:bg-slate-300 hover:text-slate-900 border border-slate-300"
                 }`}
               >
                 {tab.id === "ai" && (
@@ -300,35 +363,42 @@ export default function LandingPage() {
                     />
                   </svg>
                 )}
-
                 <span>{tab.label}</span>
               </button>
             ))}
           </div>
 
           {/* Tab content */}
-          <div className="bg-white/5 border border-white/10 rounded-2xl p-8 overflow-hidden">
+          <div className={`border rounded-2xl p-8 overflow-hidden ${
+            isDark
+              ? "bg-slate-800/30 border-slate-700"
+              : "bg-white/60 border-slate-200"
+          }`}>
             {/* Tab 1: AI yang Menulis */}
             {activeTab === "ai" && (
               <div className="animate-fade-in">
-                <h3 className="text-2xl font-bold text-white mb-3">
+                <h3 className={`text-2xl font-bold mb-3 ${isDark ? "text-white" : "text-slate-900"}`}>
                   Bukan Template Biasa
                 </h3>
-                <p className="text-blue-200/80 leading-relaxed mb-6">
+                <p className={`leading-relaxed mb-6 ${isDark ? "text-slate-300" : "text-slate-600"}`}>
                   CV Craft AI menggunakan Claude AI dari Anthropic — model
                   bahasa terpintar di dunia — untuk menulis setiap kalimat CV
                   kamu dari nol. Bukan mengisi template kosong, tapi benar-benar
                   menulis ulang pengalamanmu menjadi narasi yang kuat dan
                   meyakinkan.
                 </p>
-                <div className="bg-violet-500/10 border border-violet-500/20 rounded-xl p-5 space-y-2">
-                  <p className="text-violet-200 text-sm font-medium">
+                <div className={`border rounded-xl p-5 space-y-2 ${
+                  isDark
+                    ? "bg-purple-500/10 border-purple-500/20"
+                    : "bg-purple-100 border-purple-300/50"
+                }`}>
+                  <p className={`text-sm font-medium ${isDark ? "text-purple-200" : "text-purple-700"}`}>
                     ✓ Action verbs otomatis
                   </p>
-                  <p className="text-violet-200 text-sm font-medium">
+                  <p className={`text-sm font-medium ${isDark ? "text-purple-200" : "text-purple-700"}`}>
                     ✓ ATS-friendly format
                   </p>
-                  <p className="text-violet-200 text-sm font-medium">
+                  <p className={`text-sm font-medium ${isDark ? "text-purple-200" : "text-purple-700"}`}>
                     ✓ Bahasa profesional Indonesia
                   </p>
                 </div>
@@ -338,23 +408,27 @@ export default function LandingPage() {
             {/* Tab 2: Format ATS-Friendly */}
             {activeTab === "ats" && (
               <div className="animate-fade-in">
-                <h3 className="text-2xl font-bold text-white mb-3">
+                <h3 className={`text-2xl font-bold mb-3 ${isDark ? "text-white" : "text-slate-900"}`}>
                   Lolos Sistem Seleksi Otomatis
                 </h3>
-                <p className="text-blue-200/80 leading-relaxed mb-6">
+                <p className={`leading-relaxed mb-6 ${isDark ? "text-slate-300" : "text-slate-600"}`}>
                   90% perusahaan besar menggunakan ATS (Applicant Tracking
                   System) untuk menyaring CV kemudian dibaca HRD. CV Craft AI
                   memastikan CV kamu terstruktur dengan benar agar tidak
                   tersaring di tahap pertama.
                 </p>
-                <div className="bg-emerald-500/10 border border-emerald-500/20 rounded-xl p-5 space-y-2">
-                  <p className="text-emerald-200 text-sm font-medium">
+                <div className={`border rounded-xl p-5 space-y-2 ${
+                  isDark
+                    ? "bg-green-500/10 border-green-500/20"
+                    : "bg-green-100 border-green-300/50"
+                }`}>
+                  <p className={`text-sm font-medium ${isDark ? "text-green-200" : "text-green-700"}`}>
                     ✓ Struktur yang terbaca ATS
                   </p>
-                  <p className="text-emerald-200 text-sm font-medium">
+                  <p className={`text-sm font-medium ${isDark ? "text-green-200" : "text-green-700"}`}>
                     ✓ Keyword yang relevan
                   </p>
-                  <p className="text-emerald-200 text-sm font-medium">
+                  <p className={`text-sm font-medium ${isDark ? "text-green-200" : "text-green-700"}`}>
                     ✓ Format bersih tanpa tabel kompleks
                   </p>
                 </div>
@@ -364,37 +438,55 @@ export default function LandingPage() {
             {/* Tab 3: 3 Template Profesional */}
             {activeTab === "template" && (
               <div className="animate-fade-in">
-                <h3 className="text-2xl font-bold text-white mb-3">
+                <h3 className={`text-2xl font-bold mb-3 ${isDark ? "text-white" : "text-slate-900"}`}>
                   Tampilan yang Memikat HRD
                 </h3>
-                <p className="text-blue-200/80 leading-relaxed mb-6">
+                <p className={`leading-relaxed mb-6 ${isDark ? "text-slate-300" : "text-slate-600"}`}>
                   Pilih dari 3 template yang dirancang khusus oleh desainer
                   profesional. Setiap template dioptimalkan untuk keterbacaan
                   dan kesan pertama yang kuat.
                 </p>
                 <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 min-w-0">
-                  <div className="bg-blue-500/10 border border-blue-500/20 rounded-xl p-4 text-center">
-                    <div className="w-10 h-10 rounded-full bg-blue-500 mx-auto mb-2 shadow-lg shadow-blue-500/30" />
-                    <p className="text-blue-200 font-semibold text-sm">Biru</p>
-                    <p className="text-blue-300/60 text-xs mt-1">
+                  <div className={`border rounded-xl p-4 text-center ${
+                    isDark
+                      ? "bg-blue-500/10 border-blue-500/20"
+                      : "bg-blue-100 border-blue-300/50"
+                  }`}>
+                    <div className={`w-10 h-10 rounded-full mx-auto mb-2 shadow-lg ${
+                      isDark ? "bg-blue-500 shadow-blue-500/30" : "bg-blue-500 shadow-blue-500/30"
+                    }`} />
+                    <p className={`font-semibold text-sm ${isDark ? "text-blue-200" : "text-blue-700"}`}>Biru</p>
+                    <p className={`text-xs mt-1 ${isDark ? "text-blue-300/60" : "text-blue-600/60"}`}>
                       Profesional & Terpercaya
                     </p>
                   </div>
-                  <div className="bg-emerald-500/10 border border-emerald-500/20 rounded-xl p-4 text-center">
-                    <div className="w-10 h-10 rounded-full bg-emerald-500 mx-auto mb-2 shadow-lg shadow-emerald-500/30" />
-                    <p className="text-emerald-200 font-semibold text-sm">
+                  <div className={`border rounded-xl p-4 text-center ${
+                    isDark
+                      ? "bg-green-500/10 border-green-500/20"
+                      : "bg-green-100 border-green-300/50"
+                  }`}>
+                    <div className={`w-10 h-10 rounded-full mx-auto mb-2 shadow-lg ${
+                      isDark ? "bg-green-500 shadow-green-500/30" : "bg-green-500 shadow-green-500/30"
+                    }`} />
+                    <p className={`font-semibold text-sm ${isDark ? "text-green-200" : "text-green-700"}`}>
                       Hijau
                     </p>
-                    <p className="text-emerald-300/60 text-xs mt-1">
+                    <p className={`text-xs mt-1 ${isDark ? "text-green-300/60" : "text-green-600/60"}`}>
                       Modern & Segar
                     </p>
                   </div>
-                  <div className="bg-gray-500/10 border border-gray-500/20 rounded-xl p-4 text-center">
-                    <div className="w-10 h-10 rounded-full bg-gray-600 mx-auto mb-2 shadow-lg shadow-gray-500/30" />
-                    <p className="text-gray-200 font-semibold text-sm">
+                  <div className={`border rounded-xl p-4 text-center ${
+                    isDark
+                      ? "bg-gray-500/10 border-gray-500/20"
+                      : "bg-gray-100 border-gray-300/50"
+                  }`}>
+                    <div className={`w-10 h-10 rounded-full mx-auto mb-2 shadow-lg ${
+                      isDark ? "bg-gray-600 shadow-gray-500/30" : "bg-gray-600 shadow-gray-500/30"
+                    }`} />
+                    <p className={`font-semibold text-sm ${isDark ? "text-gray-200" : "text-gray-700"}`}>
                       Minimal
                     </p>
-                    <p className="text-gray-300/60 text-xs mt-1">
+                    <p className={`text-xs mt-1 ${isDark ? "text-gray-300/60" : "text-gray-600/60"}`}>
                       Elegan & Bersih
                     </p>
                   </div>
@@ -405,38 +497,30 @@ export default function LandingPage() {
             {/* Tab 4: Proses 3 Menit */}
             {activeTab === "proses" && (
               <div className="animate-fade-in">
-                <h3 className="text-2xl font-bold text-white mb-3">
+                <h3 className={`text-2xl font-bold mb-3 ${isDark ? "text-white" : "text-slate-900"}`}>
                   Dari Data ke CV Siap Kirim
                 </h3>
-                <div className="space-y-4 mb-8">
+                <div className="space-y-4 mb-6">
                   {[
-                    {
-                      menit: "01",
-                      label: "Menit 1",
-                      desc: "Isi form data diri, pengalaman, skill",
-                    },
-                    {
-                      menit: "02",
-                      label: "Menit 2",
-                      desc: "AI menulis dan menyusun CV kamu",
-                    },
-                    {
-                      menit: "03",
-                      label: "Menit 3",
-                      desc: "Pilih template, download PDF, selesai!",
-                    },
+                    { menit: "~1", label: "Buka Aplikasi", desc: "Kunjungi CVCraft AI dan mulai dari nol" },
+                    { menit: "~1", label: "Isi Data Kamu", desc: "Input pengalaman, skill, dan pendidikan" },
+                    { menit: "~1", label: "Download CV", desc: "Pilih template dan download PDF" },
                   ].map((step, i) => (
                     <div key={i} className="flex items-center gap-4">
-                      <div className="w-12 h-12 rounded-full bg-violet-600/30 border border-violet-500/40 flex items-center justify-center shrink-0">
-                        <span className="text-violet-300 font-bold text-sm">
+                      <div className={`w-12 h-12 rounded-full border flex items-center justify-center shrink-0 ${
+                        isDark
+                          ? "bg-purple-600/30 border-purple-500/40"
+                          : "bg-purple-100 border-purple-300/50"
+                      }`}>
+                        <span className={`font-bold text-sm ${isDark ? "text-purple-300" : "text-purple-700"}`}>
                           {step.menit}
                         </span>
                       </div>
                       <div className="min-w-0">
-                        <p className="text-white font-semibold text-sm">
+                        <p className={`font-semibold text-sm ${isDark ? "text-white" : "text-slate-900"}`}>
                           {step.label}
                         </p>
-                        <p className="text-blue-200/70 text-sm truncate">
+                        <p className={`text-sm truncate ${isDark ? "text-slate-300" : "text-slate-600"}`}>
                           {step.desc}
                         </p>
                       </div>
@@ -445,9 +529,13 @@ export default function LandingPage() {
                 </div>
                 <Link
                   to="/create"
-                  className="inline-flex items-center gap-2 px-6 py-3 bg-violet-600 hover:bg-violet-700 text-white font-bold rounded-xl transition-all shadow-lg shadow-violet-500/30"
+                  className={`inline-flex items-center gap-2 px-6 py-3 font-bold rounded-xl transition-all shadow-lg ${
+                    isDark
+                      ? "bg-purple-600 hover:bg-purple-700 text-white shadow-purple-500/30"
+                      : "bg-purple-600 hover:bg-purple-700 text-white shadow-purple-500/30"
+                  }`}
                 >
-                  Coba Sekarang — Gratis!
+                  Coba Sekarang!
                 </Link>
               </div>
             )}
@@ -456,12 +544,50 @@ export default function LandingPage() {
       </section>
 
       {/* Kenapa CV Craft AI? */}
-      <section className="max-w-6xl mx-auto px-6 py-20">
+
+      {/* Feature Comparison Cards */}
+      <section className="max-w-4xl mx-auto px-6 py-16">
+        <h3 className={`text-2xl font-bold text-center mb-10 ${isDark ? "text-white" : "text-slate-900"}`}>
+          Rencana Pengembangan
+        </h3>
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+          {/* Card Gratis */}
+          <div className={`p-8 rounded-3xl border ${isDark ? "bg-slate-800 border-slate-700 shadow-xl" : "bg-white border-slate-200"}`}>
+            <h4 className={`text-xl font-bold mb-2 ${isDark ? "text-white" : "text-slate-900"}`}>Gratis (Beta)</h4>
+            <p className={`text-sm mb-6 ${isDark ? "text-slate-400" : "text-slate-500"}`}>Untuk langkah awal karier kamu</p>
+            <ul className="space-y-4">
+              {["Pembuatan CV AI", "Download PDF", "3 Template Utama"].map((f) => (
+                <li key={f} className={`flex items-center gap-3 text-sm font-medium ${isDark ? "text-slate-200" : "text-slate-700"}`}>
+                  <span className="text-green-500 font-bold">✓</span> {f}
+                </li>
+              ))}
+            </ul>
+          </div>
+          
+          {/* Card Pro */}
+          <div className={`p-8 rounded-3xl border relative overflow-hidden ${isDark ? "bg-slate-800 border-purple-500/50 shadow-[0_0_20px_rgba(168,85,247,0.15)]" : "bg-purple-50 border-purple-200"}`}>
+            <div className="absolute top-4 right-4 bg-purple-600 text-white text-[10px] font-bold px-3 py-1 rounded-full uppercase tracking-widest">
+              Segera
+            </div>
+            <h4 className={`text-xl font-bold mb-2 ${isDark ? "text-white" : "text-slate-900"}`}>CVCraft Pro</h4>
+            <p className={`text-sm mb-6 ${isDark ? "text-purple-300" : "text-purple-700"}`}>Untuk level profesional</p>
+            <ul className="space-y-4">
+              {["Cloud Sync Portofolio", "Kustomisasi Domain", "Dukungan Prioritas"].map((f) => (
+                <li key={f} className={`flex items-center gap-3 text-sm font-medium ${isDark ? "text-slate-200" : "text-slate-700"}`}>
+                  <span className="text-purple-500 font-bold">✦</span> {f}
+                </li>
+              ))}
+            </ul>
+          </div>
+        </div>
+      </section>
+
+      <section className={`max-w-6xl mx-auto px-6 py-20 ${isDark ? "" : "bg-slate-50/30"}`}>
         <div className="text-center mb-12">
-          <h2 className="text-3xl md:text-4xl font-extrabold text-white mb-3">
+          <h2 className={`text-3xl md:text-4xl font-extrabold mb-3 ${isDark ? "text-white" : "text-slate-900"}`}>
             Kenapa CV Craft AI?
           </h2>
-          <p className="text-blue-200/70 text-lg">
+          <p className={`text-lg ${isDark ? "text-slate-300" : "text-slate-600"}`}>
             Dibuat khusus untuk pencari kerja Indonesia
           </p>
         </div>
@@ -469,95 +595,42 @@ export default function LandingPage() {
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
           {[
             {
-              id: "kilat",
-              title: "Tanpa Daftar Akun",
-              desc: "Langsung buat CV tanpa perlu sign up atau login. Data tersimpan di browsermu sendiri.",
+              id: 1,
+              title: "Tanpa Batasan Fitur",
+              desc: "Kami percaya setiap pencari kerja berhak mendapatkan kemudahan. Gunakan semua fitur profesional kami secara gratis selama periode prototipe ini.",
             },
             {
-              id: "aman",
-              title: "Data Tetap Pribadimu",
-              desc: "CV dan data kamu tersimpan di localStorage browser sendiri, bukan di server kami.",
+              id: 2,
+              title: "Bahasa Indonesia Native",
+              desc: "AI-nya dilatih untuk menulis CV bahasa Indonesia yang profesional, bukan hanya terjemahan.",
             },
             {
-              id: "share",
-              title: "Portofolio Bisa Dibagikan",
-              desc: "Buat halaman portofolio online dengan URL unik yang bisa dikirim ke rekruter via link.",
+              id: 3,
+              title: "Tanpa Email & Password",
+              desc: "Mulai langsung tanpa perlu daftar akun. Data disimpan di device kamu sendiri (local storage).",
             },
             {
-              id: "gratis",
-              title: "Core Features Gratis!",
-              desc: "Nikmati fitur utama pembuatan CV bertenaga AI dan Download PDF secara gratis tanpa biaya tersembunyi atau API key. Fitur lanjutan seperti Cloud Sync publik akan hadir Add-on Premium.",
+              id: 4,
+              title: "Powered by Claude AI",
+              desc: "Menggunakan Claude 3.5 Sonnet — model AI paling powerful untuk penulisan profesional.",
             },
           ].map((f) => (
             <div
               key={f.id}
-              className="bg-white/5 backdrop-blur rounded-2xl p-6 border border-white/10 flex items-start gap-4"
+              className={`backdrop-blur rounded-2xl p-6 border flex items-start gap-4 transition-all ${
+                isDark
+                  ? "bg-slate-800/30 border-slate-700 hover:bg-slate-800/50"
+                  : "bg-white/70 border-slate-200 hover:bg-white"
+              }`}
             >
-              <div className="text-blue-400 shrink-0 mt-0.5">
-                {f.id === "kilat" && (
-                  <svg
-                    className="w-7 h-7"
-                    fill="none"
-                    viewBox="0 0 24 24"
-                    stroke="currentColor"
-                    strokeWidth={2}
-                  >
-                    <path
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                      d="M13 10V3L4 14h7v7l9-11h-7z"
-                    />
-                  </svg>
-                )}
-                {f.id === "aman" && (
-                  <svg
-                    className="w-7 h-7"
-                    fill="none"
-                    viewBox="0 0 24 24"
-                    stroke="currentColor"
-                    strokeWidth={2}
-                  >
-                    <path
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                      d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"
-                    />
-                  </svg>
-                )}
-                {f.id === "share" && (
-                  <svg
-                    className="w-7 h-7"
-                    fill="none"
-                    viewBox="0 0 24 24"
-                    stroke="currentColor"
-                    strokeWidth={2}
-                  >
-                    <path
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                      d="M8.684 13.342C8.886 12.938 9 12.482 9 12c0-.482-.114-.938-.316-1.342m0 2.684a3 3 0 110-2.684m0 2.684l6.632 3.316m-6.632-6l6.632-3.316m0 0a3 3 0 105.367-2.684 3 3 0 00-5.367 2.684zm0 9.316a3 3 0 105.368 2.684 3 3 0 00-5.368-2.684z"
-                    />
-                  </svg>
-                )}
-                {f.id === "gratis" && (
-                  <svg
-                    className="w-7 h-7"
-                    fill="none"
-                    viewBox="0 0 24 24"
-                    stroke="currentColor"
-                    strokeWidth={2}
-                  >
-                    <path
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                      d="M9 12l2 2 4-4M7.835 4.697a3.42 3.42 0 001.946-.806 3.42 3.42 0 014.438 0 3.42 3.42 0 001.946.806 3.42 3.42 0 013.138 3.138 3.42 3.42 0 00.806 1.946 3.42 3.42 0 010 4.438 3.42 3.42 0 00-.806 1.946 3.42 3.42 0 01-3.138 3.138 3.42 3.42 0 00-1.946.806 3.42 3.42 0 01-4.438 0 3.42 3.42 0 00-1.946-.806 3.42 3.42 0 01-3.138-3.138 3.42 3.42 0 00-.806-1.946 3.42 3.42 0 010-4.438 3.42 3.42 0 00.806-1.946 3.42 3.42 0 013.138-3.138z"
-                    />
-                  </svg>
-                )}
+              <div className={`shrink-0 mt-0.5 ${isDark ? "text-purple-400" : "text-purple-600"}`}>
+                <svg className="w-6 h-6" fill="currentColor" viewBox="0 0 20 20">
+                  <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd" />
+                </svg>
               </div>
               <div>
-                <h3 className="text-white font-bold text-lg mb-1">{f.title}</h3>
-                <p className="text-blue-200/70 text-sm leading-relaxed">
+                <h3 className={`font-bold text-lg mb-1 ${isDark ? "text-white" : "text-slate-900"}`}>{f.title}</h3>
+                <p className={`text-sm leading-relaxed ${isDark ? "text-slate-300" : "text-slate-600"}`}>
                   {f.desc}
                 </p>
               </div>
@@ -569,7 +642,11 @@ export default function LandingPage() {
         <div className="text-center mt-16">
           <Link
             to="/create"
-            className="inline-flex items-center gap-2.5 px-10 py-5 bg-gradient-to-r from-blue-500 to-violet-600 hover:from-blue-600 hover:to-violet-700 text-white font-extrabold rounded-2xl text-xl transition-all shadow-2xl shadow-blue-500/30 hover:-translate-y-1"
+            className={`inline-flex items-center gap-2.5 px-10 py-5 font-extrabold rounded-2xl text-xl transition-all shadow-2xl hover:-translate-y-1 ${
+              isDark
+                ? "bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700 text-white shadow-purple-500/30"
+                : "bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700 text-white shadow-purple-500/30"
+            }`}
           >
             <svg
               className="w-5 h-5 text-white fill-current animate-bounce"
@@ -583,15 +660,19 @@ export default function LandingPage() {
             </svg>
             Mulai Buat CV
           </Link>
-          <p className="text-blue-200/50 text-sm mt-4">
-            Gratis · Tanpa daftar · Selesai dalam 3 menit
+          <p className={`text-sm mt-4 ${isDark ? "text-slate-400" : "text-slate-500"}`}>
+            Tanpa daftar · Selesai dalam 3 menit · Langsung pakai
           </p>
         </div>
       </section>
 
       {/* Footer */}
-      <div className="border-t border-white/10 py-6 text-center">
-        <p className="text-blue-200/50 text-sm">
+      <div className={`border-t py-6 text-center ${
+        isDark
+          ? "border-slate-800/50"
+          : "border-slate-200/50"
+      }`}>
+        <p className={`text-sm ${isDark ? "text-slate-500" : "text-slate-500"}`}>
           Dibuat dengan CVCraft AI — Harun Vibathon 2026
         </p>
       </div>
