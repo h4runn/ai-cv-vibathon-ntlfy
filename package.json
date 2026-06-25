@@ -5,6 +5,7 @@
   "type": "module",
   "scripts": {
     "dev": "vite",
+    "dev:netlify": "netlify dev",
     "build": "vite build",
     "preview": "vite preview"
   },
@@ -25,5 +26,8 @@
     "tailwindcss": "^3.4.16",
     "typescript": "^5.6.3",
     "vite": "^6.0.5"
+  },
+  "devDependencies": {
+    "netlify-cli": "^17.0.0"
   }
 }
