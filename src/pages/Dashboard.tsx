@@ -3,6 +3,7 @@ import { Link, useNavigate } from 'react-router-dom'
 import type { LocalCV } from '../types/cv'
 
 const CV_LIST_KEY = 'cv_list'
+const DRAFT_KEY = 'cv_form_draft'
 
 export default function Dashboard() {
   const navigate = useNavigate()
@@ -23,10 +24,21 @@ export default function Dashboard() {
     navigate('/result')
   }
 
+  const handleEdit = (cv: LocalCV) => {
+    // Load form data ke localStorage sebagai draft
+    localStorage.setItem(DRAFT_KEY, JSON.stringify(cv.formData))
+    // Set ID untuk tracking edit mode
+    localStorage.setItem('cv_edit_id', cv.id)
+    // Navigate ke CreateCV
+    navigate('/create')
+  }
+
   const handleDelete = (id: string) => {
-    const updated = cvs.filter((cv) => cv.id !== id)
-    setCVs(updated)
-    localStorage.setItem(CV_LIST_KEY, JSON.stringify(updated))
+    if (window.confirm('Apakah Anda yakin ingin menghapus CV ini?')) {
+      const updated = cvs.filter((cv) => cv.id !== id)
+      setCVs(updated)
+      localStorage.setItem(CV_LIST_KEY, JSON.stringify(updated))
+    }
   }
 
   const formatDate = (iso: string) => {
@@ -113,6 +125,13 @@ export default function Dashboard() {
                     className="flex-1 text-center text-sm font-medium text-blue-600 hover:text-blue-700 py-2 border border-blue-100 hover:border-blue-200 rounded-xl transition-colors"
                   >
                     Lihat →
+                  </button>
+                  <button
+                    onClick={() => handleEdit(cv)}
+                    className="flex-1 text-center text-sm font-medium text-green-600 hover:text-green-700 py-2 border border-green-100 hover:border-green-200 rounded-xl transition-colors"
+                    title="Edit CV"
+                  >
+                    ✏️ Edit
                   </button>
                   <button
                     onClick={() => handleDelete(cv.id)}

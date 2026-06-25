@@ -4,6 +4,8 @@ import type { CVFormData } from "../types/cv";
 import { defaultFormData } from "../types/cv";
 
 const DRAFT_KEY = "cv_form_draft";
+const EDIT_ID_KEY = "cv_edit_id";
+const CV_LIST_KEY = "cv_list";
 const STEPS = [
   "Data Pribadi",
   "Pendidikan",
@@ -20,6 +22,8 @@ export default function CreateCV() {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
   const [hasDraft, setHasDraft] = useState(false);
+  const [isEditMode, setIsEditMode] = useState(false);
+  const [editId, setEditId] = useState<string | null>(null);
 
   // State tambahan untuk animasi tombol AI Polish
   const [polishingExp, setPolishingExp] = useState(false);
@@ -28,6 +32,13 @@ export default function CreateCV() {
 
   // Load draft on mount
   useEffect(() => {
+    const storedEditId = localStorage.getItem(EDIT_ID_KEY);
+    if (storedEditId) {
+      setEditId(storedEditId);
+      setIsEditMode(true);
+      localStorage.removeItem(EDIT_ID_KEY);
+    }
+
     const draft = localStorage.getItem(DRAFT_KEY);
     if (draft) {
       try {
@@ -427,84 +438,79 @@ export default function CreateCV() {
     setError("");
 
     try {
-      await new Promise((resolve) => setTimeout(resolve, 2000));
+      // Call Netlify Function to generate CV with AI
+      const response = await fetch("/.netlify/functions/generate-cv", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ formData: form }),
+      });
 
-      const mockAIResult = {
-        profile: {
-          name: form.name || "Harun",
-          email: form.email || "akubisa@email.com",
-          phone: form.phone || "+62 812 3456 7890",
-          location: form.location || "Jakarta, Indonesia",
-          jobTitle: form.jobTitle || "Profesional Berbakat",
-          linkedin: form.linkedin || "",
-          summary: getSummary(form),
-        },
-        education: [
-          {
-            institution: form.institution || "Universitas Terkemuka",
-            degree: form.degree || "Sarjana / Diploma",
-            year: form.graduationYear || "2024",
-            description:
-              form.educationDesc ||
-              "Lulus dengan predikat sangat memuaskan dan aktif berorganisasi.",
-          },
-        ],
-        experience: [
-          {
-            company: form.company || "Perusahaan Inovatif",
-            position: form.position || form.jobTitle || "Professional Staff",
-            period: form.period || "2022 - Sekarang",
-            points: form.experiencePoints
-              ? form.experiencePoints.split("\n").filter((p) => p.trim() !== "")
-              : [
-                  "Memimpin pelaksanaan tugas utama dengan peningkatan efisiensi hingga 40%",
-                ],
-          },
+      let errorMessage = "";
+      
+      if (!response.ok) {
+        try {
+          const errorData = await response.json();
+          errorMessage = 
+            errorData.message || 
+            errorData.error || 
+            `Error ${response.status}: ${JSON.stringify(errorData).substring(0, 100)}`;
+        } catch {
+          errorMessage = `HTTP Error ${response.status}: ${response.statusText}`;
+        }
+        throw new Error(errorMessage);
+      }
 
-          ...(form.experiences || []).map((exp) => ({
-            company: exp.company || "",
-            position: exp.position || "",
-            period: exp.period || "",
-            points: exp.points
-              ? exp.points.split("\n").filter((p) => p.trim() !== "")
-              : [],
-          })),
-        ],
-        skills: {
-          technical: form.technicalSkills
-            ? form.technicalSkills.split(",").map((s) => s.trim())
-            : ["Keahlian Inti 1", "Keahlian Inti 2"],
-          soft: form.softSkills
-            ? form.softSkills.split(",").map((s) => s.trim())
-            : ["Problem Solving", "Komunikasi"],
-        },
-        languages: form.languages
-          ? form.languages.split(",").map((l) => l.trim())
-          : ["Bahasa Indonesia (Native)"],
-        achievements: form.achievements
-          ? form.achievements.split("\n").filter((a) => a.trim() !== "")
-          : ["Pencapaian Profesional Terpilih"],
-      };
+      let data: any;
+      try {
+        data = await response.json();
+      } catch (parseErr) {
+        throw new Error(
+          "Server response tidak valid. Kemungkinan: API key not configured di Netlify."
+        );
+      }
 
-      const newCV = {
-        id: "cv_" + Date.now(),
-        formData: form,
-        aiResult: mockAIResult,
-        createdAt: new Date().toISOString(),
-        templateColor: "blue",
-      };
+      const aiResult = data.result;
 
-      const existing = JSON.parse(localStorage.getItem("cv_list") || "[]");
-      existing.unshift(newCV);
-      localStorage.setItem("cv_list", JSON.stringify(existing));
+      // Validate AI result structure
+      if (!aiResult || !aiResult.profile) {
+        throw new Error(
+          "Format respons AI tidak valid. Pastikan API key sudah ter-set di Netlify environment."
+        );
+      }
 
+      let cvList = JSON.parse(localStorage.getItem(CV_LIST_KEY) || "[]");
+
+      if (isEditMode && editId) {
+        // Update existing CV
+        const index = cvList.findIndex((cv: any) => cv.id === editId);
+        if (index !== -1) {
+          cvList[index] = {
+            ...cvList[index],
+            formData: form,
+            aiResult: aiResult,
+            updatedAt: new Date().toISOString(),
+          };
+        }
+      } else {
+        // Create new CV
+        const newCV = {
+          id: "cv_" + Date.now(),
+          formData: form,
+          aiResult: aiResult,
+          createdAt: new Date().toISOString(),
+          templateColor: "blue",
+        };
+        cvList.unshift(newCV);
+      }
+
+      localStorage.setItem(CV_LIST_KEY, JSON.stringify(cvList));
       localStorage.removeItem(DRAFT_KEY);
-      sessionStorage.setItem("cv_result", JSON.stringify(mockAIResult));
+      sessionStorage.setItem("cv_result", JSON.stringify(aiResult));
       navigate("/result");
     } catch (e) {
-      setError(
-        e instanceof Error ? e.message : "Terjadi kesalahan. Coba lagi."
-      );
+      const errorMsg = e instanceof Error ? e.message : "Terjadi kesalahan. Coba lagi.";
+      setError(errorMsg);
+      console.error("[DEBUG] Generate CV error:", errorMsg);
     } finally {
       setLoading(false);
     }
@@ -537,6 +543,11 @@ export default function CreateCV() {
           <span className="font-bold text-white tracking-wide">
             CVCraft AI Studio
           </span>
+          {isEditMode && (
+            <span className="ml-2 px-2 py-1 bg-amber-500/20 border border-amber-500/30 text-amber-400 text-xs font-semibold rounded-lg">
+              Mode Edit
+            </span>
+          )}
         </div>
         {draftSaved && (
           /* GANTI ICON DISKET MENJADI SVG DI BAWAH INI */
@@ -1156,32 +1167,34 @@ export default function CreateCV() {
                       disabled={loading || !form.name || !form.jobTitle}
                       className="w-full py-3 bg-blue-600 hover:bg-blue-700 disabled:bg-gray-800 disabled:text-gray-500 text-white font-bold rounded-xl text-xs uppercase tracking-wider transition-all shadow-md flex items-center justify-center gap-2"
                     >
-                      {loading ? (
-                        <>
-                          <svg
-                            className="animate-spin h-3.5 w-3.5 text-white"
-                            fill="none"
-                            viewBox="0 0 24 24"
-                          >
-                            <circle
-                              className="opacity-25"
-                              cx="12"
-                              cy="12"
-                              r="10"
-                              stroke="currentColor"
-                              strokeWidth="4"
-                            />
-                            <path
-                              className="opacity-75"
-                              fill="currentColor"
-                              d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
-                            />
-                          </svg>
-                          Memproses Formulasi Dokumen...
-                        </>
-                      ) : (
-                        "Eksekusi Formulasi & Generate CV"
-                      )}
+                       {loading ? (
+                         <>
+                           <svg
+                             className="animate-spin h-3.5 w-3.5 text-white"
+                             fill="none"
+                             viewBox="0 0 24 24"
+                           >
+                             <circle
+                               className="opacity-25"
+                               cx="12"
+                               cy="12"
+                               r="10"
+                               stroke="currentColor"
+                               strokeWidth="4"
+                             />
+                             <path
+                               className="opacity-75"
+                               fill="currentColor"
+                               d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
+                             />
+                           </svg>
+                           Memproses Formulasi Dokumen...
+                         </>
+                       ) : isEditMode ? (
+                         "Update & Regenerate CV"
+                       ) : (
+                         "Eksekusi Formulasi & Generate CV"
+                       )}
                     </button>
                   </div>
                 </div>
