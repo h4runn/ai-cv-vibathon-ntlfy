@@ -140,7 +140,7 @@ export default function LandingPage() {
               d="M5 3v4M3 5h4M6 17v4m-2-2h4m5-16l2.286 6.857L21 12l-5.714 2.143L13 21l-2.286-6.857L5 12l5.714-2.143L13 3z"
             />
           </svg>
-          <span>Harun Vibathon 2026 · Powered by Claude AI</span>
+          <span>Harun Vibathon 2026 · Powered by OpenRouter AI</span>
         </div>
 
         <h1 className={`text-5xl md:text-7xl font-extrabold mb-6 leading-tight ${isDark ? "text-white" : "text-slate-900"}`}>
@@ -186,7 +186,7 @@ export default function LandingPage() {
             {
               id: "ai",
               title: "AI Menulis Untukmu",
-              desc: "Claude AI menganalisis data kamu dan menghasilkan CV profesional yang kuat dan ATS-friendly secara otomatis.",
+              desc: "AI canggih menganalisis data kamu dan menghasilkan CV profesional yang kuat dan ATS-friendly secara otomatis.",
             },
             {
               id: "web",
@@ -381,11 +381,10 @@ export default function LandingPage() {
                   Bukan Template Biasa
                 </h3>
                 <p className={`leading-relaxed mb-6 ${isDark ? "text-slate-300" : "text-slate-600"}`}>
-                  CV Craft AI menggunakan Claude AI dari Anthropic — model
-                  bahasa terpintar di dunia — untuk menulis setiap kalimat CV
-                  kamu dari nol. Bukan mengisi template kosong, tapi benar-benar
-                  menulis ulang pengalamanmu menjadi narasi yang kuat dan
-                  meyakinkan.
+                  CV Craft AI menggunakan teknologi AI terdepan melalui OpenRouter — 
+                  untuk menulis setiap kalimat CV kamu dari nol. Bukan mengisi template 
+                  kosong, tapi benar-benar menulis ulang pengalamanmu menjadi narasi 
+                  yang kuat dan meyakinkan.
                 </p>
                 <div className={`border rounded-xl p-5 space-y-2 ${
                   isDark
@@ -611,8 +610,8 @@ export default function LandingPage() {
             },
             {
               id: 4,
-              title: "Powered by Claude AI",
-              desc: "Menggunakan Claude 3.5 Sonnet — model AI paling powerful untuk penulisan profesional.",
+              title: "Powered by OpenRouter AI",
+              desc: "Menggunakan model AI terbaik melalui OpenRouter — akses ke berbagai model AI terdepan untuk penulisan profesional.",
             },
           ].map((f) => (
             <div
