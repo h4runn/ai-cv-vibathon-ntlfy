@@ -439,7 +439,7 @@ export default function CreateCV() {
 
     try {
       // Call Netlify Function to generate CV with AI
-      const response = await fetch("/.netlify/functions/generate-cv", {
+      const response = await fetch("/api/generate-cv", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ formData: form }),
