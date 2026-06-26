@@ -205,12 +205,6 @@ export default function Portfolio() {
                 <div className="flex flex-wrap items-center gap-x-6 gap-y-3 text-xs md:text-sm text-slate-600 font-mono pt-6 border-t border-slate-200/60 mt-6">
                   {profile.location && (
                     <span className="flex items-center gap-1.5">
-                      📍 {profile.location}
-                    </span>
-                  )}
-
-                  {profile.location && (
-                    <span className="flex items-center gap-1.5">
                       <MapPin size={14} className="text-slate-400" />{" "}
                       {profile.location}
                     </span>
@@ -246,7 +240,7 @@ export default function Portfolio() {
                       rel="noreferrer"
                       className="relative z-30 cursor-pointer text-blue-600 hover:underline flex items-center gap-1.5 font-mono font-bold"
                     >
-                      🔗 LinkedIn
+                      <LinkIcon size={14} className="text-slate-400" /> LinkedIn
                     </a>
                   )}
                 </div>

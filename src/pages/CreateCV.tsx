@@ -450,12 +450,24 @@ export default function CreateCV() {
       if (!response.ok) {
         try {
           const errorData = await response.json();
-          errorMessage = 
-            errorData.message || 
-            errorData.error || 
-            `Error ${response.status}: ${JSON.stringify(errorData).substring(0, 100)}`;
+          
+          // Detailed error messages based on status
+          if (response.status === 404) {
+            errorMessage = "⚠️ Endpoint AI tidak ditemukan. Pastikan aplikasi sudah di-deploy dengan benar.";
+          } else if (response.status === 401) {
+            errorMessage = "🔑 API Key tidak valid atau expired. Hubungi administrator.";
+          } else if (response.status === 429) {
+            errorMessage = "⏱️ Terlalu banyak permintaan. Tunggu beberapa detik dan coba lagi.";
+          } else if (response.status === 500) {
+            errorMessage = `🔧 Server error: ${errorData.message || errorData.error || 'Terjadi kesalahan di server AI'}`;
+          } else {
+            errorMessage = 
+              errorData.message || 
+              errorData.error || 
+              `❌ Error ${response.status}: ${response.statusText}`;
+          }
         } catch {
-          errorMessage = `HTTP Error ${response.status}: ${response.statusText}`;
+          errorMessage = `❌ HTTP Error ${response.status}: ${response.statusText || 'Gagal menghubungi server AI'}`;
         }
         throw new Error(errorMessage);
       }
@@ -465,7 +477,7 @@ export default function CreateCV() {
         data = await response.json();
       } catch (parseErr) {
         throw new Error(
-          "Server response tidak valid. Kemungkinan: API key not configured di Netlify."
+          "⚠️ Respons server tidak valid (bukan JSON). Periksa konfigurasi API key di Vercel Environment Variables."
         );
       }
 
@@ -474,7 +486,7 @@ export default function CreateCV() {
       // Validate AI result structure
       if (!aiResult || !aiResult.profile) {
         throw new Error(
-          "Format respons AI tidak valid. Pastikan API key sudah ter-set di Netlify environment."
+          "⚠️ Format respons AI tidak sesuai. Pastikan API key OpenRouter sudah di-set dengan benar di Vercel Dashboard → Settings → Environment Variables (OPENROUTER_API_KEY)."
         );
       }
 
