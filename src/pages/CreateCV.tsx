@@ -48,17 +48,29 @@ export default function CreateCV() {
     }
   }, []);
 
-  // Auto-save to localStorage
+  // Auto-save to localStorage with debounce
   const saveDraft = useCallback((data: CVFormData) => {
     localStorage.setItem(DRAFT_KEY, JSON.stringify(data));
     setDraftSaved(true);
-    setTimeout(() => setDraftSaved(false), 2000);
+    setTimeout(() => setDraftSaved(false), 3000);
   }, []);
+
+  // Debounced save (500ms delay)
+  const debouncedSave = useCallback(
+    (() => {
+      let timeoutId: NodeJS.Timeout;
+      return (data: CVFormData) => {
+        clearTimeout(timeoutId);
+        timeoutId = setTimeout(() => saveDraft(data), 500);
+      };
+    })(),
+    [saveDraft]
+  );
 
   const updateForm = (updates: Partial<CVFormData>) => {
     const next = { ...form, ...updates };
     setForm(next);
-    saveDraft(next);
+    debouncedSave(next);
   };
 
   const clearDraft = () => {
@@ -561,25 +573,34 @@ export default function CreateCV() {
             </span>
           )}
         </div>
-        {draftSaved && (
-          /* GANTI ICON DISKET MENJADI SVG DI BAWAH INI */
-          <span className="text-xs text-emerald-400 font-medium flex items-center gap-1.5">
-            <svg
-              className="w-4 h-4"
-              fill="none"
-              stroke="currentColor"
-              viewBox="0 0 24 24"
-            >
-              <path
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                strokeWidth={2}
-                d="M8 7H5a2 2 0 00-2 2v9a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2h-3m-1 4l-3 3m0 0l-3-3m3 3V4"
-              />
-            </svg>
-            Draft tersimpan otomatis
-          </span>
-        )}
+        
+        {/* Fixed Position Auto-save Badge - Tidak Ganggu Layout */}
+        <div className="fixed top-20 right-6 z-50 pointer-events-none">
+          <div
+            className={`transition-all duration-300 ${
+              draftSaved
+                ? "opacity-100 translate-y-0"
+                : "opacity-0 -translate-y-2 pointer-events-none"
+            }`}
+          >
+            <span className="inline-flex items-center gap-2 px-3 py-2 bg-emerald-500/90 backdrop-blur-md text-white text-xs font-semibold rounded-xl shadow-lg border border-emerald-400/30">
+              <svg
+                className="w-4 h-4"
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
+                strokeWidth={2.5}
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  d="M5 13l4 4L19 7"
+                />
+              </svg>
+              Draft Tersimpan
+            </span>
+          </div>
+        </div>
       </header>
 
       {/* SPLIT SCREEN CONTAINER */}
